@@ -1,0 +1,117 @@
+.mood {
+  margin-top: 28px;
+}
+
+.mood__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.mood__card {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 22px;
+  padding: 22px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease), opacity 0.4s var(--ease), border-color 0.4s var(--ease);
+}
+
+.mood__emoji {
+  font-size: 36px;
+  line-height: 1;
+  transition: transform 0.35s var(--ease);
+}
+
+.mood__label {
+  font-size: 13px;
+  text-align: center;
+}
+
+.mood__card:hover .mood__emoji,
+.mood__card:focus-visible .mood__emoji {
+  transform: scale(1.18) translateY(-2px);
+}
+
+.mood__card.is-selected {
+  transform: scale(1.06);
+  border-color: var(--accent-deep);
+  box-shadow: 0 0 0 6px var(--accent-soft), 0 20px 40px var(--glow);
+  background: linear-gradient(180deg, #fff, var(--blush));
+}
+
+.mood__card.is-dim {
+  opacity: 0.45;
+  transform: scale(0.96);
+}
+
+.mood__followup {
+  margin-top: 24px;
+  max-width: 480px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 20px;
+  backdrop-filter: blur(12px);
+}
+
+.mood__note-label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+}
+
+.mood__note {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  resize: vertical;
+  background: #fff;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+
+.mood__submit {
+  width: 100%;
+}
+
+.mood__thanks {
+  margin: 14px 0 0;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--accent-deep);
+}
+
+.mood__error {
+  margin: 10px 0 0;
+  color: #b06070;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .mood__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 430px) {
+  .mood__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mood__card:last-child {
+    grid-column: 1 / -1;
+  }
+}

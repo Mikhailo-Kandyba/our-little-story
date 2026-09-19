@@ -1,0 +1,11 @@
+mixin memory-modal
+  .memory-modal(data-memory-modal, hidden, aria-hidden="true", role="dialog", aria-modal="true", aria-label="Спогад")
+    .memory-modal__backdrop(data-memory-close, aria-hidden="true")
+    .memory-modal__dialog
+      button.memory-modal__close(type="button", data-memory-close, aria-label="Закрити") ×
+      .memory-modal__media
+        img.memory-modal__image(data-memory-image, alt="")
+      .memory-modal__body
+        h3.memory-modal__title(data-memory-title, hidden)
+        time.memory-modal__date(data-memory-date)
+        p.memory-modal__text(data-memory-text)

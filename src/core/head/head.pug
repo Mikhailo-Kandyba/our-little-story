@@ -1,0 +1,23 @@
+mixin head(data)
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="x-ua-compatible", content="ie=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(content="telephone=no", name="format-detection")
+    meta(name="HandheldFriendly", content="true")
+    if data.description
+      meta(name="description", content= data.description)
+    title= data.head.title
+    if data.head.fontFamily
+      link(rel="preconnect", href="https://fonts.googleapis.com")
+      link(rel="preconnect", href="https://fonts.gstatic.com", crossorigin="")
+      link(
+        href= data.head.fontFamily
+        rel="stylesheet"
+      )
+    link(rel="apple-touch-icon" sizes="180x180" href="./img/favicon/apple-touch-icon.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="./img/favicon/favicon-32x32.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="./img/favicon/favicon-16x16.png")
+    link(rel="manifest" href="./img/favicon/site.webmanifest")
+    meta(name="theme-color" content="#0c0a09")
+    link(rel="stylesheet" href="./main.css")

@@ -1,0 +1,35 @@
+include ./intro/intro
+include ./story/story
+include ./timeline/timeline
+include ./carousel/carousel
+include ./polaroid/polaroid
+include ./random-memory/random-memory
+include ./quiz/quiz
+include ./mood/mood
+include ./message/message
+include ./final/final
+include ./closing/closing
+include ./memory-modal/memory-modal
+include ./booking/booking
+include ./effects/effects
+
+mixin components(data)
+  +effects
+  +intro
+  main.site#site(hidden, aria-hidden="true")
+    +story
+    p.whisper(data-reveal)
+    +timeline
+    p.whisper(data-reveal)
+    +carousel
+    +polaroid
+    +random-memory
+    +quiz
+    +mood
+    p.whisper.whisper_quiet(data-reveal)
+    +message
+    +final
+    +closing
+  +memory-modal
+  +booking-modal
+  audio.ambient(data-ambient-audio, loop, preload="none", aria-hidden="true")

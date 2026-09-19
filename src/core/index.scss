@@ -1,0 +1,21 @@
+// Normalize
+// =================================================================
+@import 'scss/normalize/normalize';
+
+// Fonts
+// =================================================================
+@import 'scss/base/fonts';
+
+// Utils
+// =================================================================
+@import 'scss/utils/variables';
+@import '~LandingCSS/landing-variables'; // overrides default css variables with landing-specific ones.
+@import 'scss/utils/mixins';
+
+// Base
+// =================================================================
+@import 'scss/base/base';
+
+// Components
+// =================================================================
+@import '../components/components';

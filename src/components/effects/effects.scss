@@ -1,0 +1,101 @@
+.progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 300;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0);
+}
+
+.progress__bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #ffe4ec, var(--accent-deep));
+  box-shadow: 0 0 12px var(--glow);
+  transition: width 0.15s linear;
+}
+
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 380px;
+  height: 380px;
+  margin: -190px 0 0 -190px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle, var(--glow), rgba(228, 216, 245, 0.12), transparent 70%);
+  mix-blend-mode: multiply;
+  opacity: var(--glow-strength, 0.9);
+  will-change: transform;
+  transition: width 0.35s var(--ease), height 0.35s var(--ease), margin 0.35s var(--ease), opacity 0.35s var(--ease);
+}
+
+.cursor-glow.is-hot {
+  width: 460px;
+  height: 460px;
+  margin: -230px 0 0 -230px;
+  opacity: 1;
+}
+
+.site-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+.floaters {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.floater {
+  position: absolute;
+  bottom: -40px;
+  color: var(--accent-deep);
+  opacity: var(--floating-opacity, 0.22);
+  animation: floaterRise linear infinite;
+  will-change: transform;
+  transition: opacity 1s ease, color 0.8s ease;
+}
+
+.ambient {
+  display: none;
+}
+
+@keyframes floaterRise {
+  from {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  to {
+    transform: translateY(-110vh) rotate(28deg);
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-glow {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress__bar {
+    transition: none;
+  }
+
+  .cursor-glow,
+  .floaters {
+    display: none;
+  }
+}

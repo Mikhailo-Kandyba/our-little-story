@@ -1,0 +1,11 @@
+- const data = config;
+
+doctype html
+include head/head
+include ../components/components
+
+html(lang= data.language)
+  +head(data)
+  body.is-locked
+    +components(data)
+    script(src="./bundle.js")

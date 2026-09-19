@@ -1,0 +1,205 @@
+@mixin media-desktop-size {
+  @media screen and (max-width: 1920px - 0.1px) {
+    @content;
+  }
+}
+
+@mixin media-desktop-medium-size {
+  @media screen and (max-width: 1366px - 0.1px) {
+    @content;
+  }
+}
+
+@mixin media-laptop-size {
+  @media screen and (max-width: 1200px - 0.1px) {
+    @content;
+  }
+}
+
+@mixin media-laptop-xs-size {
+  @media screen and (max-width: 1024px - 0.1px) {
+    @content;
+  }
+}
+
+@mixin media-tablet-size {
+  @media screen and (max-width: 920px - 0.1px) {
+    @content;
+  }
+}
+
+@mixin media-tablet-m-size {
+  @media screen and (max-width: 820px - 0.1px) {
+    @content;
+  }
+}
+
+@mixin media-tablet-xs-size {
+  @media screen and (max-width: 768px - 0.1px) {
+    @content;
+  }
+}
+
+@mixin media-mobile-size {
+  @media screen and (max-width: 480px - 0.1px) {
+    @content;
+  }
+}
+
+@mixin media-mobile-m-size {
+  @media screen and (max-width: 393px - 0.1px) {
+    @content;
+  }
+}
+
+@mixin media-mobile-xs-size {
+  @media screen and (max-width: 321px - 0.1px) {
+    @content;
+  }
+}
+
+@mixin media-landscape-size {
+  @media screen and (orientation: landscape) and (max-height: 420px) and (min-aspect-ratio: 13/9) {
+    @content;
+  }
+}
+
+@mixin text-overflow {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+@function perc($value, $base) {
+  @return ($value / $base) * 100%;
+}
+
+@function em($px-size, $font-size) {
+  @return ($px-size / $font-size) * 1em;
+}
+
+@function vw($px-size, $base: 1920) {
+  @return ($px-size / $base) * 100vw;
+}
+
+@function vh($px-size, $base: 1080) {
+  @return ($px-size / $base) * 100vh;
+}
+
+@mixin font($font-size, $line-height: $font-size, $font-weight: false, $letter-spacing: false) {
+  font-size: ($font-size) * 1px;
+
+  @if ($line-height ==0) {
+    line-height: normal;
+  }
+
+  @else {
+    line-height: $line-height / $font-size;
+  }
+
+  @if ($font-weight) {
+    font-weight: $font-weight;
+  }
+
+  @if ($letter-spacing) {
+    letter-spacing: $letter-spacing * 1px;
+  }
+}
+
+@mixin size($width, $height: false) {
+  width: ($width) * 1px;
+
+  @if ($height) {
+    height: ($height) * 1px;
+  }
+
+  @else {
+    height: ($width) * 1px;
+  }
+}
+
+@mixin absolute-center($x: false, $y: false) {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  @if ($x and $y) {
+    transform: translate($x, $y);
+  }
+
+  @else {
+    @if ($x) {
+      transform: translate($x, -50%);
+    }
+
+    @else {
+      @if ($y) {
+        transform: translate(-50%, $y);
+      }
+
+      @else {
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
+}
+
+@mixin placeholder($color, $opacity) {
+  &::-webkit-input-placeholder {
+    color: $color;
+    opacity: $opacity;
+  }
+
+  /* Firefox 19+ */
+  &::-moz-placeholder {
+    color: $color;
+    opacity: $opacity;
+  }
+
+  /* Firefox 18- */
+  &:-moz-placeholder {
+    color: $color;
+    opacity: $opacity;
+  }
+
+  &:-ms-input-placeholder {
+    opacity: $opacity;
+    color: $color;
+  }
+
+  &::placeholder {
+    color: $color;
+    opacity: $opacity;
+  }
+}
+
+@mixin no-list() {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@mixin max($width) {
+  @media only screen and (max-width: $width + "px") {
+    @content;
+  }
+}
+
+@mixin min($widthMin, $widthMax: null) {
+  @if ($widthMax) {
+    @media only screen and (min-width: $widthMin + "px") and (max-width: $widthMax+ "px") {
+      @content;
+    }
+  }
+
+  @else {
+    @media only screen and (min-width: $widthMin + "px") {
+      @content;
+    }
+  }
+}
+
+@mixin adaptiv-font($pcSize, $mobSize, $max-width: 1920, $min-width: 320) {
+  $addSize: $pcSize - $mobSize;
+  font-size: calc(#{$mobSize + "px"} + #{$addSize} * ((100vw - #{$min-width} * 1px) / #{$max-width}));
+}

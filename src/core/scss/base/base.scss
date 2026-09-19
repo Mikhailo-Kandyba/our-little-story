@@ -1,0 +1,74 @@
+/* Base element styles — light romantic theme */
+html {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: $body-font-family;
+  font-size: $body-font-size;
+  color: var(--text, #4a3b42);
+  background-color: var(--page-bg-primary, #fffafc);
+  background-image: linear-gradient(
+    135deg,
+    var(--page-bg-primary, #fffafc),
+    var(--page-bg-secondary, #fff1f5),
+    var(--page-bg-tertiary, #f8f2ff)
+  );
+  background-attachment: fixed;
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100%;
+  margin: 0;
+  line-height: 1.6;
+  transition: background-color 1.2s ease, color 0.8s ease;
+}
+
+body.is-locked {
+  overflow: hidden;
+  height: 100%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-deep, #d4849c);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

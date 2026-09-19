@@ -1,0 +1,15 @@
+mixin final
+  section.section.final#final(aria-labelledby="final-title")
+    .final__panel
+      h2#final-title.section__title(data-reveal)
+      p.section__lead(data-reveal)
+      .final__choices(data-reveal, role="group", aria-label="Варіанти розмови")
+        button.final__choice(type="button", data-choice="meet", data-magnetic)
+          span.final__choice-hint
+          span.final__choice-label Побачитися
+        button.final__choice(type="button", data-choice="call", data-magnetic)
+          span.final__choice-hint
+          span.final__choice-label Зідзвонитися
+        button.final__choice(type="button", data-choice="text", data-magnetic)
+          span.final__choice-hint
+          span.final__choice-label Просто написати

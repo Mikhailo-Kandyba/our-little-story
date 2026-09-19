@@ -1,0 +1,12 @@
+mixin intro
+  section.intro#intro(aria-label="Вступ")
+    .intro__glow(aria-hidden="true")
+    .intro__float(data-intro-float, aria-hidden="true")
+    .intro__content
+      button.intro__heart(type="button", data-egg-heart, aria-label="Серце") ♡
+      h1.intro__greeting(data-intro-greeting) Привіт, Настю 💗
+      p.intro__text(data-intro-text)
+        | Я міг просто написати тобі повідомлення.
+        br
+        | Але вирішив зробити дещо цікавіше.
+      button.btn.btn_primary.intro__open(type="button", data-intro-open, data-magnetic) Відкрити ✨

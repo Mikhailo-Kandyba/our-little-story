@@ -1,0 +1,78 @@
+.polaroid {
+  position: relative;
+  height: 420px;
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: pan-y;
+}
+
+.polaroid__card {
+  position: absolute;
+  width: 280px;
+  max-width: 78vw;
+  background: #fffefb;
+  border-radius: 8px;
+  padding: 14px 14px 28px;
+  box-shadow: var(--shadow);
+  transform: translateY(var(--y, 0)) rotate(var(--rot, 0deg));
+  z-index: var(--z, 1);
+  transition: transform 0.45s var(--ease), opacity 0.45s var(--ease), box-shadow 0.45s var(--ease);
+  cursor: grab;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.polaroid__card:hover {
+  box-shadow: 0 24px 50px rgba(180, 120, 140, 0.28);
+}
+
+.polaroid__photo {
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--blush);
+  height: 260px;
+}
+
+.polaroid__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.polaroid__caption {
+  font-family: var(--font-hand);
+  font-style: italic;
+  font-size: 20px;
+  margin: 14px 4px 4px;
+  color: var(--text);
+}
+
+.polaroid__date {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 4px;
+}
+
+.polaroid__card.is-fly-left {
+  transform: translateX(-140%) rotate(-18deg);
+  opacity: 0;
+}
+
+.polaroid__card.is-fly-right {
+  transform: translateX(140%) rotate(18deg);
+  opacity: 0;
+}
+
+@media (max-width: 600px) {
+  .polaroid {
+    height: 380px;
+  }
+
+  .polaroid__photo {
+    height: 220px;
+  }
+}

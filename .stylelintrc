@@ -1,0 +1,48 @@
+{
+  "extends": "stylelint-config-recommended-scss",
+  "ignoreFiles": [
+    "**/base/*.scss",
+    "**/normalize/*.scss",
+    "**/icon-fonts/**"
+  ],
+  "plugins": [
+    "stylelint-no-unsupported-browser-features"
+  ],
+  "rules": {
+    "plugin/no-unsupported-browser-features": [true, {
+      "severity": "warning",
+      "ignore": ["css-resize", "flexbox", "css-fixed", "viewport-units", "transforms3d", "css-gradients"]
+    }],
+    "selector-pseudo-element-no-unknown":[
+      true,
+      {
+        "ignorePseudoElements": ["/^ng-/", "pseudo-element"]
+      }
+    ],
+    "color-hex-case": "lower",
+    "number-leading-zero": "always",
+    "unit-case": "lower",
+    "unit-no-unknown": true,
+    "no-descending-specificity": null,
+    "max-empty-lines": 1,
+    "color-named": [
+      "never",
+      {
+        "ignore": ["inside-function"]
+      }
+    ],
+    "declaration-colon-space-before": "never",
+    "declaration-colon-space-after": "always-single-line",
+    "unit-blacklist": ["em", "rem"],
+    "block-closing-brace-empty-line-before": "never",
+    "block-closing-brace-newline-after": "always",
+    "no-duplicate-selectors": true,
+    "no-empty-source": true,
+    "block-no-empty": true,
+    "comment-no-empty": true,
+    "declaration-block-single-line-max-declarations": 1,
+    "function-max-empty-lines": 0,
+    "value-list-max-empty-lines": 0,
+    "declaration-block-trailing-semicolon": "always"
+  }
+}

@@ -1,0 +1,260 @@
+/**
+ * Mood atmosphere — змінює лише CSS variables через [data-mood].
+ * Налаштування кольорів: цей файл.
+ */
+
+:root {
+  --page-bg-primary: #fffafc;
+  --page-bg-secondary: #fff1f5;
+  --page-bg-tertiary: #f8f2ff;
+  --mood-bg-1: var(--page-bg-primary);
+  --mood-bg-2: var(--page-bg-secondary);
+  --mood-accent: #e8a0b4;
+  --animation-speed: 1;
+  --floating-opacity: 0.22;
+  --glow-strength: 0.9;
+  --mood-transition: 1.2s ease;
+}
+
+/* 😔 Не дуже — тихіше, lavender */
+html[data-mood="sad"],
+body[data-mood="sad"] {
+  --page-bg-primary: #faf8ff;
+  --page-bg-secondary: #f5eff8;
+  --page-bg-tertiary: #f3eef6;
+  --mood-bg-1: #faf8ff;
+  --mood-bg-2: #f5eff8;
+  --mood-accent: #cbbbd5;
+  --accent: #cbbbd5;
+  --accent-deep: #b5a3c0;
+  --accent-soft: rgba(203, 187, 213, 0.28);
+  --glow: rgba(203, 187, 213, 0.22);
+  --glow-strength: 0.18;
+  --border: rgba(181, 163, 192, 0.28);
+  --blush: #ebe4f0;
+  --powder: #e4dceb;
+  --shadow: 0 18px 50px rgba(160, 140, 180, 0.12);
+  --btn-grad-a: #f3eef8;
+  --btn-grad-b: #ebe4f2;
+}
+
+/* 😕 Так собі */
+html[data-mood="meh"],
+body[data-mood="meh"] {
+  --page-bg-primary: #fff9f8;
+  --page-bg-secondary: #f9f2f5;
+  --page-bg-tertiary: #f6eef2;
+  --mood-bg-1: #fff9f8;
+  --mood-bg-2: #f9f2f5;
+  --mood-accent: #d8bfc8;
+  --accent: #d8bfc8;
+  --accent-deep: #c4a8b4;
+  --accent-soft: rgba(216, 191, 200, 0.28);
+  --glow: rgba(216, 191, 200, 0.26);
+  --glow-strength: 0.24;
+  --border: rgba(196, 168, 180, 0.28);
+  --blush: #f0e4e8;
+  --powder: #ead8e0;
+  --shadow: 0 18px 50px rgba(170, 140, 150, 0.14);
+  --btn-grad-a: #ffeef2;
+  --btn-grad-b: #f5e6ec;
+}
+
+/* 😌 Спокійно */
+html[data-mood="calm"],
+body[data-mood="calm"] {
+  --page-bg-primary: #fffaf7;
+  --page-bg-secondary: #fff3f6;
+  --page-bg-tertiary: #f8f0f4;
+  --mood-bg-1: #fffaf7;
+  --mood-bg-2: #fff3f6;
+  --mood-accent: #e6bec9;
+  --accent: #e6bec9;
+  --accent-deep: #d4a4b2;
+  --accent-soft: rgba(230, 190, 201, 0.26);
+  --glow: rgba(230, 190, 201, 0.3);
+  --glow-strength: 0.28;
+  --border: rgba(212, 164, 178, 0.26);
+  --blush: #f5dde4;
+  --powder: #f0d0da;
+  --shadow: 0 18px 50px rgba(180, 130, 150, 0.14);
+  --btn-grad-a: #ffe8ef;
+  --btn-grad-b: #f8e0ea;
+}
+
+/* 🙂 Добре */
+html[data-mood="good"],
+body[data-mood="good"] {
+  --page-bg-primary: #fff9f4;
+  --page-bg-secondary: #ffeef4;
+  --page-bg-tertiary: #ffe8f0;
+  --mood-bg-1: #fff9f4;
+  --mood-bg-2: #ffeef4;
+  --mood-accent: #eeaabd;
+  --accent: #eeaabd;
+  --accent-deep: #e08aa3;
+  --accent-soft: rgba(238, 170, 189, 0.28);
+  --glow: rgba(238, 170, 189, 0.4);
+  --glow-strength: 0.4;
+  --border: rgba(224, 138, 163, 0.28);
+  --blush: #f9d0dc;
+  --powder: #f5c0d0;
+  --shadow: 0 18px 50px rgba(200, 120, 150, 0.18);
+  --btn-grad-a: #ffe0ea;
+  --btn-grad-b: #ffd4e4;
+}
+
+/* 🥰 Дуже добре */
+html[data-mood="great"],
+body[data-mood="great"] {
+  --page-bg-primary: #fff7fa;
+  --page-bg-secondary: #ffe4ed;
+  --page-bg-tertiary: #ffdce8;
+  --mood-bg-1: #fff7fa;
+  --mood-bg-2: #ffe4ed;
+  --mood-accent: #ed8faa;
+  --accent: #ed8faa;
+  --accent-deep: #e07496;
+  --accent-soft: rgba(237, 143, 170, 0.32);
+  --glow: rgba(237, 143, 170, 0.48);
+  --glow-strength: 0.5;
+  --border: rgba(224, 116, 150, 0.32);
+  --blush: #fbc4d4;
+  --powder: #f7b0c6;
+  --shadow: 0 20px 55px rgba(210, 110, 145, 0.2);
+  --btn-grad-a: #ffd6e4;
+  --btn-grad-b: #ffc8dc;
+}
+
+/* Плавні переходи атмосфери */
+body,
+.intro,
+.section,
+.btn,
+.timeline__card,
+.quiz__card,
+.mood__card,
+.final__choice,
+.booking__dialog,
+.memory-modal__dialog,
+.random__card,
+.polaroid__card,
+.carousel__btn,
+.cursor-glow,
+.progress__bar,
+.whisper {
+  transition:
+    background 1.2s ease,
+    background-color 1.2s ease,
+    color 0.8s ease,
+    border-color 0.8s ease,
+    box-shadow 1.2s ease;
+}
+
+.btn_primary {
+  background: linear-gradient(135deg, var(--btn-grad-a, #ffe4ec), var(--btn-grad-b, #f3d4ff));
+}
+
+.mood__emoji.is-popping {
+  animation: moodEmojiPop 0.55s var(--ease);
+}
+
+@keyframes moodEmojiPop {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.25);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.mood-wave {
+  position: fixed;
+  z-index: 250;
+  width: 24px;
+  height: 24px;
+  margin: -12px 0 0 -12px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, var(--mood-accent, #e8a0b4) 0%, rgba(255, 255, 255, 0) 70%);
+  opacity: 0.45;
+  transform: scale(0.2);
+  transition: transform 1.15s var(--ease), opacity 1.15s ease;
+}
+
+.mood-wave.is-active {
+  transform: scale(55);
+  opacity: 0;
+}
+
+.mood-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%) translateY(16px);
+  z-index: 420;
+  max-width: 90vw;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 14px;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(12px);
+  transition: opacity 0.5s ease, transform 0.5s var(--ease), background 1.2s ease, border-color 0.8s ease;
+}
+
+.mood-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.mood-toast.is-out {
+  opacity: 0;
+  transform: translateX(-50%) translateY(8px);
+}
+
+/* Легкий sparkle лише для great */
+html.has-mood-sparkle .site-grain {
+  opacity: 0.07;
+}
+
+html.has-mood-sparkle .cursor-glow {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mood__emoji.is-popping,
+  .mood-wave {
+    animation: none;
+    transition: none;
+  }
+
+  body,
+  .intro,
+  .section,
+  .btn,
+  .timeline__card,
+  .quiz__card,
+  .mood__card,
+  .final__choice,
+  .booking__dialog,
+  .memory-modal__dialog,
+  .random__card,
+  .polaroid__card,
+  .carousel__btn,
+  .cursor-glow,
+  .progress__bar,
+  .whisper {
+    transition: none;
+  }
+}

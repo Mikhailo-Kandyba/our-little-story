@@ -1,0 +1,14 @@
+{
+  "name": "land-story",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ../../node_modules/cross-var npm run start --prefix ../../ -- --env.LANDING=$npm_package_name",
+    "start-map": "SET ADDMAP=true && node ../../node_modules/cross-var npm run start --prefix ../../ -- --env.LANDING=$npm_package_name",
+    "build": "node ../../node_modules/cross-var npm run build --prefix ../../ -- --env.LANDING=$npm_package_name"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

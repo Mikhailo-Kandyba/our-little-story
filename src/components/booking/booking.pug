@@ -1,0 +1,7 @@
+mixin booking-modal
+  .booking(data-booking-modal, hidden, aria-hidden="true", role="dialog", aria-modal="true", aria-labelledby="booking-title")
+    .booking__backdrop(data-booking-close, aria-hidden="true")
+    .booking__dialog
+      button.booking__close(type="button", data-booking-close, aria-label="Закрити") ×
+      h2#booking-title.booking__title Коли тобі зручно?
+      .booking__panel(data-booking-panel)
