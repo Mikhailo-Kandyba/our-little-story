@@ -1,15 +1,27 @@
-# Notify API (email)
+# Notify API (Telegram)
 
-Фронтенд викликає лише `POST /api/notify` з JSON.
-Секрети **не** потрапляють у bundle.
+Фронтенд викликає лише `POST /api/telegram` з JSON.
+Секрети **не** потрапляють у bundle — лише Cloudflare Worker secrets.
 
-## Що додати (один секрет + email)
+## Runtime secrets
 
-1. `RESEND_API_KEY` — ключ з https://resend.com
-2. `NOTIFY_TO_EMAIL` — твоя пошта
-3. (опційно) `NOTIFY_FROM_EMAIL` — verified sender
+1. `TELEGRAM_BOT_TOKEN` — токен бота від @BotFather
+2. `TELEGRAM_CHAT_ID` — ID чату/каналу для повідомлень
 
-У `src/js/siteConfig.js` поле `NOTIFY_ENDPOINT` — публічний URL функції
-(наприклад `/api/notify` на тому ж домені після деплою).
+```bash
+npx wrangler secret put TELEGRAM_BOT_TOKEN
+npx wrangler secret put TELEGRAM_CHAT_ID
+```
 
-Без деплою API фронтенд симулює відправку через `sessionStorage`.
+Локально: скопіюй `.dev.vars.example` → `.dev.vars` (файл у `.gitignore`).
+
+## Payload types
+
+- `mood` — `{ type, mood, emoji, message? }`
+- `booking` — `{ type, bookingType, date, dateLabel?, time }`
+- `reaction` — `{ type, memoryId, reaction }`
+
+`chat_id` / token з клієнта **відхиляються**.
+
+У `src/js/siteConfig.js` поле `NOTIFY_ENDPOINT` = `/api/telegram`.
+Без Worker (локальний webpack) фронтенд симулює через `sessionStorage`.

@@ -5,8 +5,8 @@
  * Фото: src/img/memories/memory-01.jpg …
  * Аудіо (опційно): src/audio/ambient.mp3
  *
- * NOTIFY_ENDPOINT — публічний URL serverless-функції
- * (секрети email туди НЕ класти)
+ * NOTIFY_ENDPOINT — публічний Worker endpoint (/api/telegram).
+ * Секрети Telegram туди НЕ класти — лише Cloudflare runtime secrets.
  */
 
 export const girlName = 'Настя';
@@ -15,7 +15,7 @@ export const authorName = 'Міша';
 export const CONTACT_URL = '#';
 
 /** Публічний endpoint. Порожній рядок = симуляція (console + sessionStorage). */
-export const NOTIFY_ENDPOINT = '';
+export const NOTIFY_ENDPOINT = '/api/telegram';
 
 export const ambientAudio = 'audio/ambient.mp3';
 

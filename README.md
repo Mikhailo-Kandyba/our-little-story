@@ -18,18 +18,19 @@ npm run build
 
 Артефакти з’являться в `dist/land-story/`.
 
-## Сповіщення
+## Сповіщення (Telegram)
 
-Фронтенд викликає лише публічний `POST` endpoint (`NOTIFY_ENDPOINT` у `src/js/siteConfig.js`).
-Секрети живуть тільки в environment variables на сервері — див. `api/README.md`.
+Фронтенд викликає `POST /api/telegram` (`NOTIFY_ENDPOINT` у `src/js/siteConfig.js`).
+Секрети — лише Cloudflare runtime secrets. Див. `api/README.md`.
 
-Потрібні змінні (email через Resend):
+## Cloudflare Workers
 
-- `RESEND_API_KEY`
-- `NOTIFY_TO_EMAIL`
-- `NOTIFY_FROM_EMAIL` (опційно)
+```bash
+npm run build:site
+npx wrangler deploy
+```
 
-Без деплою API фронтенд симулює відправку через `sessionStorage`.
+Або одним кроком: `npm run deploy`.
 
 ## Структура
 

@@ -1,13 +1,8 @@
 /**
- * Notification service — фронтенд лише викликає публічний endpoint.
- * Секрети email (Resend / SendGrid) живуть ТІЛЬКИ на сервері.
+ * Notification service — frontend only calls the public Worker endpoint.
+ * Secrets (TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID) live ONLY on Cloudflare.
  *
- * Потрібна конфігурація (один секрет):
- *   RESEND_API_KEY=re_xxx
- *   NOTIFY_TO_EMAIL=you@example.com
- *   (опційно) NOTIFY_FROM_EMAIL=noreply@yourdomain.com
- *
- * Див. /api/notify.js — приклад serverless.
+ * See api/telegram.js + worker/index.js.
  */
 
 import { NOTIFY_ENDPOINT } from '../siteConfig';
