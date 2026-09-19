@@ -50,6 +50,22 @@
   object-position: center;
 }
 
+.polaroid__photo video {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center;
+  background: var(--blush);
+  pointer-events: none;
+}
+
+.polaroid__card:first-child video {
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
 .polaroid__caption {
   font-family: var(--font-hand);
   font-style: italic;

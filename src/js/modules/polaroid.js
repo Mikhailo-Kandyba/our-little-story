@@ -1,5 +1,12 @@
 import { memories } from '../siteConfig';
 import { prefersReducedMotion } from './utils';
+import {
+  armVideoPreload,
+  isVideoItem,
+  mediaPath,
+  pointerOnVideo,
+  videoMarkup
+} from './media';
 
 export function initPolaroid() {
   const root = document.querySelector('[data-polaroid]');
@@ -17,10 +24,15 @@ export function initPolaroid() {
       .slice(0, 4)
       .map((m, i) => {
         const rot = (i % 2 === 0 ? -1 : 1) * (4 + i * 2);
+        const video = isVideoItem(m);
+        const media = video
+          ? videoMarkup(m)
+          : '<img src="' + mediaPath(m) + '" alt="" draggable="false" data-fallback>';
+        const button = video ? ' tabindex="0"' : ' tabindex="0" role="button"';
         return `
-          <article class="polaroid__card" data-polaroid-card style="--z:${40 - i};--rot:${rot}deg;--y:${i * 8}px" tabindex="0" role="button" aria-label="${m.date}">
+          <article class="polaroid__card" data-polaroid-card style="--z:${40 - i};--rot:${rot}deg;--y:${i * 8}px"${button} aria-label="${m.date}">
             <div class="polaroid__photo">
-              <img src="${m.image}" alt="" draggable="false" data-fallback>
+              ${media}
             </div>
             <p class="polaroid__caption">${m.caption || m.text}</p>
             <time class="polaroid__date">${m.date}</time>
@@ -28,6 +40,7 @@ export function initPolaroid() {
         `;
       })
       .join('');
+    armVideoPreload(root);
   }
 
   function flyTop(dir) {
@@ -36,6 +49,10 @@ export function initPolaroid() {
       return;
     }
     const gone = stack.shift();
+    const playing = top.querySelector('video');
+    if (playing) {
+      playing.pause();
+    }
     if (!prefersReducedMotion()) {
       top.classList.add(dir < 0 ? 'is-fly-left' : 'is-fly-right');
       window.setTimeout(() => {
@@ -48,7 +65,10 @@ export function initPolaroid() {
     }
   }
 
-  root.addEventListener('click', () => {
+  root.addEventListener('click', (e) => {
+    if (pointerOnVideo(e)) {
+      return;
+    }
     if (didSwipe) {
       didSwipe = false;
       return;
@@ -56,6 +76,9 @@ export function initPolaroid() {
     flyTop(1);
   });
   root.addEventListener('keydown', (e) => {
+    if (pointerOnVideo(e)) {
+      return;
+    }
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       flyTop(1);
@@ -63,7 +86,7 @@ export function initPolaroid() {
   });
 
   root.addEventListener('pointerdown', (e) => {
-    if (!e.target.closest('[data-polaroid-card]')) {
+    if (!e.target.closest('[data-polaroid-card]') || pointerOnVideo(e)) {
       return;
     }
     dragging = true;
@@ -98,4 +121,5 @@ export function initPolaroid() {
   });
 
   render();
+  armVideoPreload(root);
 }

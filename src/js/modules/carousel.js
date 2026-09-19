@@ -1,6 +1,13 @@
 import { memories, reactions, ui, easterEggs } from '../siteConfig';
 import { prefersReducedMotion } from './utils';
 import { sendNotification } from '../services/notify';
+import {
+  armVideoPreload,
+  isVideoItem,
+  mediaPath,
+  pointerOnVideo,
+  videoMarkup
+} from './media';
 
 export function initCarousel() {
   const root = document.querySelector('[data-carousel]');
@@ -12,6 +19,7 @@ export function initCarousel() {
   let startX = 0;
   let deltaX = 0;
   let dragging = false;
+  let videoPointer = null;
 
   root.innerHTML = `
     <div class="carousel__viewport" data-carousel-viewport>
@@ -36,9 +44,12 @@ export function initCarousel() {
     .map((m, i) => {
       const secret =
         m.id === easterEggs.secretPhotoId ? ' data-memory-secret="1"' : '';
+      const media = isVideoItem(m)
+        ? videoMarkup(m, { secret: !!secret })
+        : '<img src="' + mediaPath(m) + '" alt="" draggable="false" data-fallback' + secret + '>';
       return `
       <article class="carousel__slide" data-carousel-slide="${i}"${secret}>
-        <img src="${m.image}" alt="" draggable="false" data-fallback${secret}>
+        ${media}
       </article>
     `;
     })
@@ -67,6 +78,13 @@ export function initCarousel() {
       index + 1 + ' / ' + memories.length;
     root.querySelector('[data-carousel-date]').textContent = m.date;
     root.querySelector('[data-carousel-text]').textContent = m.text;
+    track.querySelectorAll('video').forEach((video) => {
+      const slide = video.closest('[data-carousel-slide]');
+      const slideIndex = slide ? Number(slide.getAttribute('data-carousel-slide')) : -1;
+      if (slideIndex !== index) {
+        video.pause();
+      }
+    });
   }
 
   function go(dir) {
@@ -78,6 +96,9 @@ export function initCarousel() {
   root.querySelector('[data-carousel-next]').addEventListener('click', () => go(1));
 
   document.addEventListener('keydown', (e) => {
+    if (pointerOnVideo(e)) {
+      return;
+    }
     if (
       document.body.classList.contains('has-modal') ||
       document.body.classList.contains('is-locked') ||
@@ -123,12 +144,47 @@ export function initCarousel() {
   };
 
   viewport.addEventListener('pointerdown', (e) => {
+    const video = pointerOnVideo(e) ? e.target.closest('video') : null;
+    if (video) {
+      const rect = video.getBoundingClientRect();
+      const bar = Math.min(96, Math.max(64, rect.height * 0.22));
+      videoPointer = {
+        x: e.clientX,
+        y: e.clientY,
+        controls: e.clientY >= rect.bottom - bar
+      };
+      return;
+    }
+    videoPointer = null;
     viewport.setPointerCapture(e.pointerId);
     onDown(e.clientX);
   });
-  viewport.addEventListener('pointermove', (e) => onMove(e.clientX));
-  viewport.addEventListener('pointerup', onUp);
-  viewport.addEventListener('pointercancel', onUp);
+  viewport.addEventListener('pointermove', (e) => {
+    if (videoPointer) {
+      return;
+    }
+    onMove(e.clientX);
+  });
+  viewport.addEventListener('pointerup', (e) => {
+    if (videoPointer) {
+      const dx = e.clientX - videoPointer.x;
+      const dy = e.clientY - videoPointer.y;
+      const onControls = videoPointer.controls;
+      videoPointer = null;
+      if (!onControls && Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+        go(dx < 0 ? 1 : -1);
+      }
+      return;
+    }
+    onUp();
+  });
+  viewport.addEventListener('pointercancel', () => {
+    if (videoPointer) {
+      videoPointer = null;
+      return;
+    }
+    onUp();
+  });
 
   reactionsEl.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-reaction]');
@@ -145,6 +201,7 @@ export function initCarousel() {
   });
 
   render();
+  armVideoPreload(viewport);
 }
 
 function flyReaction(btn, emoji) {

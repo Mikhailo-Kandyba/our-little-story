@@ -1,5 +1,6 @@
 import { trapFocus } from './utils';
 import { ui } from '../siteConfig';
+import { isVideoItem, mediaPath, mountVideo, releaseVideo } from './media';
 
 let lastFocus = null;
 
@@ -10,6 +11,7 @@ export function initMemoryModal() {
   }
 
   const image = modal.querySelector('[data-memory-image]');
+  const video = modal.querySelector('[data-memory-video]');
   const date = modal.querySelector('[data-memory-date]');
   const text = modal.querySelector('[data-memory-text]');
   const title = modal.querySelector('[data-memory-title]');
@@ -23,10 +25,19 @@ export function initMemoryModal() {
 
   function open(memory) {
     lastFocus = document.activeElement;
-    if (image) {
-      image.src = memory.image || '';
-      image.alt = memory.title || memory.date || 'Спогад';
-      image.classList.remove('is-fallback');
+    if (isVideoItem(memory) && video) {
+      if (image) {
+        image.hidden = true;
+      }
+      mountVideo(video, memory);
+    } else {
+      releaseVideo(video);
+      if (image) {
+        image.hidden = false;
+        image.src = mediaPath(memory) || '';
+        image.alt = memory.title || memory.date || 'Спогад';
+        image.classList.remove('is-fallback');
+      }
     }
     if (date) {
       date.textContent = memory.date || '';
@@ -49,6 +60,7 @@ export function initMemoryModal() {
   }
 
   function close() {
+    releaseVideo(video);
     modal.classList.remove('is-open');
     document.body.classList.remove('has-modal');
     window.setTimeout(() => {

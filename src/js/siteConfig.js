@@ -3,6 +3,9 @@
  *  SITE CONFIG — увесь персональний контент тут
  * ============================================================
  * Фото: src/img/memories/memory-01.jpg …
+ * Відео: MP4 (H.264 + AAC) у src/img/memories/
+ *   { type: 'video', src: 'img/memories/clip.mp4', poster: 'img/memories/poster.jpeg', title: '...', text: '...' }
+ *   poster необовʼязковий. Поле image теж підходить замість src. .mov краще конвертувати в .mp4.
  * Аудіо (опційно): src/audio/ambient.mp3
  *
  * NOTIFY_ENDPOINT — публічний Worker endpoint (/api/telegram).
@@ -37,45 +40,50 @@ export const story = {
 export const timeline = [
   {
     id: 'meet',
-    date: 'Березень 2024',
+    type: 'video',
+    date: '31 Жовтня 2025',
     title: 'Перша зустріч',
-    text: 'Коротка розмова, яка чомусь не відчувалась короткою. Placeholder — перепиши.',
-    image: 'img/memories/memory-01.jpg'
+    text: 'З цього все почалося 🤍' +
+      'Звичайний вечір, звичайне відео… А поруч дівчина, яка згодом стала для мене зовсім не звичайною.',
+    image: 'img/memories/1-meet.mp4'
   },
   {
     id: 'date',
-    date: 'Квітень 2024',
-    title: 'Перше побачення',
-    text: 'Між хвилюванням і сміхом. Placeholder для того вечора.',
-    image: 'img/memories/memory-02.jpg'
+    type: 'video',
+    date: '18 грудня 2025',
+    title: 'Наше перше побачення 🤍',
+    text: 'Останній ряд, мультик і момент, коли я вперше взяв тебе за руку. Пам’ятаю це тепло досі. Потім ми ще довго гуляли, я проводжав тебе додому… і зовсім не хотів, щоб цей вечір закінчувався. 🥺',
+    image: 'img/memories/1-date.mp4'
   },
   {
     id: 'evening',
-    date: 'Червень 2024',
-    title: 'Звичайний вечір',
-    text: 'Нічого особливого в календарі. А в памʼяті — один із найкращих.',
-    image: 'img/memories/memory-03.jpg'
-  },
-  {
-    id: 'funny',
-    date: 'Серпень 2024',
-    title: 'Смішний момент',
-    text: 'Ти знаєш який. Деталі — за тобою.',
-    image: 'img/memories/memory-04.jpg'
-  },
-  {
-    id: 'important',
-    date: 'Жовтень 2024',
-    title: 'Важливий день',
-    text: 'Не гучний. Просто важливий.',
-    image: 'img/memories/memory-05.jpg'
+    date: '26 Грудня 2025',
+    title: 'Наш вечір «Холостяка» 🌹',
+    text: 'Я просто хотів тебе порадувати, тому влаштував нам маленький тематичний вечір. Пам’ятаю твою реакцію і те, як тобі все сподобалося. Такі наші вечори я згадую з особливим теплом. 🤍',
+    image: 'img/memories/1-night.jpeg'
   },
   {
     id: 'today',
-    date: 'Сьогодні',
-    title: 'Сьогодні',
-    text: 'І ось ми тут — дивимось назад трохи уважніше.',
-    image: 'img/memories/memory-06.jpg'
+    type: 'video',
+    date: '28 Грудня 2025',
+    title: 'Коли ми просто дуріли 😂🤍',
+    text: 'Я вже навіть не пам’ятаю, що саме намагався тут повторити 😂 Але пам’ятаю тебе за камерою, наш сміх і те, як легко нам було разом. Саме з таких маленьких і трохи дурних моментів і складаються мої найтепліші спогади про нас.',
+    image: 'img/memories/1-funny-1.mp4'
+  },
+  {
+    id: 'funny',
+    type: 'video',
+    date: '18 Січня 2026',
+    title: 'Один із тих моментів, де просто ми 🤍',
+    text: 'Блекаут, одна лампочка, якийсь рілс, який ми вирішили повторити, і купа сміху. Ти поруч, обіймаєш мене, цілуєш, ми дуріємо… І мені в той момент більше нічого не було потрібно. Просто було дуже тепло з тобою. 🥺',
+    image: 'img/memories/1-funny.mp4'
+  },
+  {
+    id: 'important',
+    date: '19 Січня 2026',
+    title: 'Такі ж ніжні, як ти 🤍',
+    text: 'Наступного дня я подарував тобі ці квіти. Просто тому, що мені хотілося тебе радувати. Бачити твою посмішку і знати, що я став її причиною. 🌸',
+    image: 'img/memories/1-flowers.jpeg'
   }
 ];
 
@@ -89,49 +97,70 @@ export const memories = [
   },
   {
     id: 'm2',
-    image: 'img/memories/memory-02.jpg',
+    image: 'img/memories/memory-02.jpeg',
     date: 'Літо 2024',
     text: 'Прогулянка, яка затягнулась довше, ніж планували.',
     caption: 'довга прогулянка'
   },
   {
     id: 'm3',
-    image: 'img/memories/memory-03.jpg',
+    image: 'img/memories/memory-03.jpeg',
     date: 'Пізній вечір',
     text: 'Музика десь поруч. Майже нічого не сказано. Майже все зрозуміло.',
     caption: 'тиша поруч'
   },
   {
     id: 'm4',
-    image: 'img/memories/memory-04.jpg',
+    image: 'img/memories/memory-04.jpeg',
     date: 'Вівторок',
     text: 'Звичайні дні потім дивують найбільше.',
     caption: 'звичайний вівторок'
   },
   {
     id: 'm5',
-    image: 'img/memories/memory-05.jpg',
+    image: 'img/memories/memory-05.jpeg',
     date: 'Осінь',
     text: 'Холодне повітря, тепла кава, речення, яке досі памʼятаю.',
     caption: 'осіння кава'
   },
   {
     id: 'm6',
-    image: 'img/memories/memory-06.jpg',
+    image: 'img/memories/memory-06.jpeg',
     date: 'Одна ніч',
     text: 'Така тиша, яка відчувається як довіра.',
     caption: 'тиха ніч'
   },
   {
     id: 'm7',
-    image: 'img/memories/memory-07.jpg',
+    image: 'img/memories/memory-07.jpeg',
     date: 'Десь поміж',
     text: 'Деталь настільки дрібна, що не мала б значення. Має.',
     caption: 'дрібниця'
   },
   {
     id: 'm8',
-    image: 'img/memories/memory-08.jpg',
+    image: 'img/memories/memory-08.jpeg',
+    date: 'Пізніше',
+    text: 'Дивитись на це зараз — мʼякше і ясніше.',
+    caption: 'трохи пізніше'
+  },
+  {
+    id: 'm8',
+    image: 'img/memories/memory-09.jpeg',
+    date: 'Пізніше',
+    text: 'Дивитись на це зараз — мʼякше і ясніше.',
+    caption: 'трохи пізніше'
+  },
+  {
+    id: 'm8',
+    image: 'img/memories/memory-10.jpeg',
+    date: 'Пізніше',
+    text: 'Дивитись на це зараз — мʼякше і ясніше.',
+    caption: 'трохи пізніше'
+  },
+  {
+    id: 'm8',
+    image: 'img/memories/memory-11.jpeg',
     date: 'Пізніше',
     text: 'Дивитись на це зараз — мʼякше і ясніше.',
     caption: 'трохи пізніше'
@@ -405,9 +434,9 @@ export const gameContent = {
     endLabel: 'Ти зібрала',
     endSuffix: 'хороших моментів 💗',
     polaroidPhotos: [
-      'img/memories/memory-02.jpg',
-      'img/memories/memory-03.jpg',
-      'img/memories/memory-05.jpg'
+      'img/memories/memory-02.jpeg',
+      'img/memories/memory-03.jpeg',
+      'img/memories/memory-05.jpeg'
     ]
   },
 
@@ -415,7 +444,7 @@ export const gameContent = {
   puzzle: {
     title: 'Склади момент',
     subtitle: 'Деякі речі складаються з маленьких шматочків.',
-    photo: 'img/memories/memory-04.jpg',
+    photo: 'img/memories/memory-04.jpeg',
     photoAlt: 'Фото-пазл',
     helpButton: 'Трошки допомогти ✨',
     helpAfterMs: 12000,
@@ -432,7 +461,7 @@ export const gameContent = {
       photo: {
         icon: '📷',
         label: 'Фото',
-        image: 'img/memories/memory-06.jpg',
+        image: 'img/memories/memory-06.jpeg',
         text: 'Цей кадр досі світиться мʼяко.'
       },
       note: {
@@ -465,10 +494,10 @@ export const gameContent = {
       'Тепліше 💗'
     ],
     collagePhotos: [
-      'img/memories/memory-02.jpg',
-      'img/memories/memory-07.jpg',
-      'img/memories/memory-08.jpg',
-      'img/memories/memory-03.jpg'
+      'img/memories/memory-02.jpeg',
+      'img/memories/memory-07.jpeg',
+      'img/memories/memory-08.jpeg',
+      'img/memories/memory-03.jpeg'
     ]
   },
 
@@ -488,7 +517,7 @@ export const gameContent = {
     thanks: 'Дякую, що пройшла цю маленьку історію 💗',
     replay: 'Переглянути спогади ще раз',
     backToSite: 'Повернутися на сайт',
-    revealPhoto: 'img/memories/memory-05.jpg'
+    revealPhoto: 'img/memories/memory-05.jpeg'
   },
 
   // --- Optional SFX paths (empty = silent, game still works) ---

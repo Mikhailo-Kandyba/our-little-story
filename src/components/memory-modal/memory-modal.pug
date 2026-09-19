@@ -5,6 +5,7 @@ mixin memory-modal
       button.memory-modal__close(type="button", data-memory-close, aria-label="Закрити") ×
       .memory-modal__media
         img.memory-modal__image(data-memory-image, alt="")
+        video.memory-modal__video(data-memory-video, controls, playsinline, webkit-playsinline, preload="none", hidden)
       .memory-modal__body
         h3.memory-modal__title(data-memory-title, hidden)
         time.memory-modal__date(data-memory-date)

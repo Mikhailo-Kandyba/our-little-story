@@ -1,5 +1,6 @@
 import { memories, randomMemory as copy } from '../siteConfig';
 import { prefersReducedMotion } from './utils';
+import { armVideoPreload, isVideoItem, mediaPath, videoMarkup } from './media';
 
 export function initRandomMemory() {
   const stage = document.querySelector('[data-random-stage]');
@@ -36,9 +37,12 @@ function showMemory(stage, memory) {
   const reduce = prefersReducedMotion();
   const next = document.createElement('div');
   next.className = 'random__card';
+  const photo = isVideoItem(memory)
+    ? videoMarkup(memory)
+    : '<img src="' + mediaPath(memory) + '" alt="" data-fallback>';
   next.innerHTML = `
     <div class="random__photo">
-      <img src="${memory.image}" alt="" data-fallback>
+      ${photo}
     </div>
     <div class="random__body">
       <time class="random__date">${memory.date}</time>
@@ -47,8 +51,15 @@ function showMemory(stage, memory) {
   `;
 
   const current = stage.querySelector('.random__card');
+  if (current) {
+    const playing = current.querySelector('video');
+    if (playing) {
+      playing.pause();
+    }
+  }
   if (!current) {
     stage.appendChild(next);
+    armVideoPreload(next);
     requestAnimationFrame(() => next.classList.add('is-visible'));
     return;
   }
@@ -56,6 +67,7 @@ function showMemory(stage, memory) {
   if (reduce) {
     stage.innerHTML = '';
     stage.appendChild(next);
+    armVideoPreload(next);
     next.classList.add('is-visible');
     return;
   }
@@ -67,6 +79,7 @@ function showMemory(stage, memory) {
       current.parentNode.removeChild(current);
     }
     stage.appendChild(next);
+    armVideoPreload(next);
     requestAnimationFrame(() => next.classList.add('is-visible'));
   }, 320);
 }

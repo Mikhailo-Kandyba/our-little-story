@@ -1,5 +1,6 @@
 import { prefersReducedMotion, isCoarsePointer } from './utils';
 import { ambientAudio, intro as introContent, memories } from '../siteConfig';
+import { isVideoItem } from './media';
 
 export function initIntro({ onOpen }) {
   const intro = document.querySelector('.intro');
@@ -49,7 +50,7 @@ function renderFloatingPhotos(intro) {
   if (!stage) {
     return;
   }
-  const picks = memories.slice(0, 5);
+  const picks = memories.filter((item) => !isVideoItem(item)).slice(0, 5);
   const positions = [
     { t: '10%', l: '4%', r: '-8deg' },
     { t: '14%', l: '70%', r: '6deg' },
