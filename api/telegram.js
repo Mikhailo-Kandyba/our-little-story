@@ -168,8 +168,8 @@ export async function sendTelegramMessage(env, text) {
   }
 
   if (!res.ok) {
-    const errText = await res.text().catch(() => '');
-    return { ok: false, reason: errText || 'telegram_http_' + res.status };
+    // Do not forward raw Telegram body (may be verbose); keep status only.
+    return { ok: false, reason: 'telegram_http_' + res.status };
   }
 
   let data;
@@ -201,7 +201,7 @@ export function jsonResponse(payload, status, extraHeaders) {
 
 /**
  * Handle POST /api/telegram (and OPTIONS).
- * Soft-fails when Telegram is down so the frontend UX stays intact.
+ * Secrets stay in env; responses never include token/chat id.
  */
 export async function handleTelegramRequest(request, env) {
   if (request.method === 'OPTIONS') {
@@ -239,14 +239,24 @@ export async function handleTelegramRequest(request, env) {
   const result = await sendTelegramMessage(env, text);
 
   if (!result.ok && result.reason === 'missing_env') {
-    console.log('[api/telegram] missing env, simulated:', data);
+    console.log(
+      '[api/telegram] missing env (token=' +
+        Boolean(env.TELEGRAM_BOT_TOKEN) +
+        ' chat=' +
+        Boolean(env.TELEGRAM_CHAT_ID) +
+        '), simulated:',
+      data.type
+    );
     return jsonResponse({ ok: true, simulated: true }, 200);
   }
 
   if (!result.ok) {
-    console.error('[api/telegram] send failed:', result.reason);
-    // Do not break the site if Telegram is unavailable
-    return jsonResponse({ ok: true, delivered: false }, 200);
+    const reason = String(result.reason || '');
+    console.error('[api/telegram] send failed:', reason.slice(0, 180));
+    if (reason.indexOf('telegram_http_429') !== -1 || reason.indexOf('429') === 0) {
+      return jsonResponse({ ok: false, error: 'rate_limited' }, 429);
+    }
+    return jsonResponse({ ok: false, error: 'telegram_unavailable' }, 502);
   }
 
   return jsonResponse({ ok: true, delivered: true }, 200);

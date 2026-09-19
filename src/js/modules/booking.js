@@ -170,7 +170,12 @@ export function initFinal() {
         dateLabel: formatLongDate(selectedDate),
         time: selectedTime
       };
-      sendNotification(payload).then(() => renderSuccess());
+      sendNotification(payload)
+        .then(() => renderSuccess())
+        .catch(() => {
+          btn.disabled = false;
+          btn.textContent = finalSection.confirmBtn;
+        });
     });
   }
 

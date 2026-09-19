@@ -66,4 +66,13 @@ if [ ! -f dist/land-story/index.html ]; then
 fi
 
 echo "==> Frontend build OK ($(du -sh dist/land-story | awk '{print $1}'))"
-echo "==> Next: Deploy command should run on image Node 22/24: npx wrangler deploy"
+
+if [ ! -f worker/index.js ] || [ ! -f wrangler.jsonc ] || [ ! -f api/telegram.js ]; then
+  echo "ERROR: Worker entry/API missing (worker/index.js, wrangler.jsonc, api/telegram.js)" >&2
+  exit 1
+fi
+
+echo "==> Worker entry OK (worker/index.js + api/telegram.js)"
+echo "==> Next: Deploy command MUST run on image Node 22/24:"
+echo "    npx wrangler deploy"
+echo "    (uses wrangler.jsonc main=./worker/index.js — do NOT use pages deploy / --assets-only)"

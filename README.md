@@ -47,7 +47,9 @@ npm run build --prefix landings/land-story
 **Що робить кожен етап**
 
 1. **Build** (`scripts/cf-build.sh`): через nvm ставить Node **10.24.1** / npm **6.14.12** → `npm install --ignore-engines` → webpack build → `dist/land-story`
-2. **Deploy** (`npx wrangler deploy`): image Node **22/24** + Wrangler з `package.json` → Worker + static assets
+2. **Deploy** (`npx wrangler deploy`): image Node **22/24** + Wrangler з `package.json` → Worker (`worker/index.js`) + static assets (`dist/land-story`).  
+   `wrangler.jsonc` має `assets.run_worker_first: true`, щоб `POST /api/telegram` завжди потрапляв у Worker, а не в Assets 404.  
+   Не використовуй `wrangler pages deploy` і не став Deploy command на assets-only.
 
 **Runtime secrets** (Settings → Variables and Secrets, не Build vars):
 

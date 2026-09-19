@@ -1,28 +1,42 @@
 /**
  * Cloudflare Worker entry.
- * - POST /api/telegram → Telegram notifications
- * - everything else → static assets from dist/land-story
+ * - /api/telegram → Telegram notifications (api/telegram.js)
+ * - everything else → static assets from dist/land-story (env.ASSETS)
+ *
+ * Requires wrangler.jsonc assets.run_worker_first = true so API routes are not
+ * answered as static-asset 404s before this script runs.
  */
 
 import { handleTelegramRequest, jsonResponse } from '../api/telegram.js';
 
+function normalizePath(pathname) {
+  if (!pathname) {
+    return '/';
+  }
+  if (pathname.length > 1 && pathname.endsWith('/')) {
+    return pathname.slice(0, -1);
+  }
+  return pathname;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const path = normalizePath(url.pathname);
 
-    if (url.pathname === '/api/telegram' || url.pathname === '/api/telegram/') {
+    // API first — never fall through to ASSETS for /api/*
+    if (path === '/api/telegram') {
       return handleTelegramRequest(request, env);
     }
 
-    if (url.pathname.startsWith('/api/')) {
+    if (path.startsWith('/api/')) {
       return jsonResponse({ ok: false, error: 'not_found' }, 404);
     }
 
-    // Fallback for any non-asset request that still hits the Worker
     if (env.ASSETS) {
       return env.ASSETS.fetch(request);
     }
 
-    return new Response('Not found', { status: 404 });
+    return jsonResponse({ ok: false, error: 'assets_unavailable' }, 500);
   }
 };
