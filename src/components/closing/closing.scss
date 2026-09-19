@@ -1,6 +1,6 @@
 .closing {
   text-align: center;
-  padding-bottom: 120px;
+  padding-bottom: unquote('calc(120px + env(safe-area-inset-bottom, 0px))');
 }
 
 .closing__inner {

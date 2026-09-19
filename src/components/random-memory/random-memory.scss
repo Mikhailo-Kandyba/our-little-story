@@ -23,7 +23,7 @@
 
 .random__stage {
   margin-top: 40px;
-  min-height: 280px;
+  min-height: unquote('clamp(220px, 50vw, 280px)');
   display: flex;
   justify-content: center;
 }

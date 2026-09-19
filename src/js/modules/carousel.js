@@ -78,7 +78,11 @@ export function initCarousel() {
   root.querySelector('[data-carousel-next]').addEventListener('click', () => go(1));
 
   document.addEventListener('keydown', (e) => {
-    if (document.body.classList.contains('has-modal') || document.body.classList.contains('is-locked')) {
+    if (
+      document.body.classList.contains('has-modal') ||
+      document.body.classList.contains('is-locked') ||
+      document.body.classList.contains('has-story-game')
+    ) {
       return;
     }
     if (e.key === 'ArrowLeft') {
@@ -100,6 +104,9 @@ export function initCarousel() {
       return;
     }
     deltaX = x - startX;
+    if (Math.abs(deltaX) > 10) {
+      viewport.style.touchAction = 'none';
+    }
     track.style.transform = 'translateX(' + deltaX * 0.35 + 'px)';
   };
   const onUp = () => {
@@ -108,8 +115,9 @@ export function initCarousel() {
     }
     dragging = false;
     viewport.classList.remove('is-dragging');
+    viewport.style.touchAction = '';
     track.style.transform = '';
-    if (Math.abs(deltaX) > 50) {
+    if (Math.abs(deltaX) > 40) {
       go(deltaX < 0 ? 1 : -1);
     }
   };

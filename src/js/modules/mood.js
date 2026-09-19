@@ -2,6 +2,8 @@ import { moods, moodSection } from '../siteConfig';
 import { sendNotification } from '../services/notify';
 import { playMoodSelectTransition } from './mood-theme';
 
+const DEDUPE_MS = 3000;
+
 export function initMood() {
   const root = document.querySelector('[data-mood]');
   if (!root) {
@@ -9,7 +11,9 @@ export function initMood() {
   }
 
   let selected = null;
-  let sent = false;
+  let isSubmitting = false;
+  let lastSubmitKey = '';
+  let lastSubmitAt = 0;
 
   root.innerHTML = `
     <div class="mood__grid" data-mood-grid>
@@ -59,9 +63,6 @@ export function initMood() {
   }
 
   grid.addEventListener('click', (e) => {
-    if (sent) {
-      return;
-    }
     const card = e.target.closest('[data-mood-id]');
     if (!card) {
       return;
@@ -76,31 +77,59 @@ export function initMood() {
       c.classList.toggle('is-dim', c !== card);
     });
     followup.hidden = false;
+    thanks.hidden = true;
+    error.hidden = true;
 
     // Тема застосовується одразу — навіть якщо пізніше API впаде
     playMoodSelectTransition(card, selected.id);
   });
 
   submit.addEventListener('click', () => {
-    if (!selected || sent) {
+    if (!selected || isSubmitting) {
       return;
     }
+
+    const message = (note.value || '').trim();
+    const submitKey = selected.id + '\0' + message;
+    const now = Date.now();
+    if (submitKey === lastSubmitKey && now - lastSubmitAt < DEDUPE_MS) {
+      return;
+    }
+
+    isSubmitting = true;
     submit.disabled = true;
+    error.hidden = true;
+    thanks.hidden = true;
+
     sendNotification({
       type: 'mood',
       mood: selected.label,
       emoji: selected.emoji,
-      message: (note.value || '').trim()
-    }).then(() => {
-      sent = true;
-      thanks.hidden = false;
-      note.disabled = true;
-      submit.hidden = true;
-      error.hidden = true;
-    }).catch(() => {
-      submit.disabled = false;
-      error.hidden = false;
-      error.textContent = 'Не вийшло надіслати. Спробуй ще раз трохи згодом.';
-    });
+      message: message
+    })
+      .then(() => {
+        lastSubmitKey = submitKey;
+        lastSubmitAt = Date.now();
+        note.value = '';
+        thanks.hidden = false;
+        error.hidden = true;
+      })
+      .catch((err) => {
+        if (typeof console !== 'undefined' && console.error) {
+          console.error('[mood] notify failed', err && err.status ? 'status=' + err.status : err);
+        }
+        error.hidden = false;
+        if (err && err.status === 429) {
+          error.textContent = 'Забагато запитів. Спробуй ще раз трохи згодом.';
+        } else {
+          error.textContent = 'Не вийшло надіслати. Спробуй ще раз трохи згодом.';
+        }
+      })
+      .finally(() => {
+        isSubmitting = false;
+        submit.disabled = false;
+        submit.hidden = false;
+        note.disabled = false;
+      });
   });
 }

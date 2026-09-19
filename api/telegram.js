@@ -3,7 +3,7 @@
  * Secrets only from env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID.
  */
 
-export const ALLOWED_TYPES = ['mood', 'booking', 'reaction'];
+export const ALLOWED_TYPES = ['mood', 'booking', 'reaction', 'game_completed'];
 
 const MAX_TEXT = 500;
 const MAX_ID = 64;
@@ -63,6 +63,21 @@ export function validatePayload(body) {
     };
   }
 
+  if (type === 'game_completed') {
+    const chapters = Number(body.completedChapters);
+    return {
+      ok: true,
+      data: {
+        type,
+        answer: clip(body.answer, MAX_TEXT),
+        completedChapters: Number.isFinite(chapters)
+          ? Math.max(0, Math.min(5, Math.round(chapters)))
+          : 5,
+        timestamp: clip(body.timestamp, 64)
+      }
+    };
+  }
+
   return {
     ok: true,
     data: {
@@ -104,6 +119,18 @@ export function formatTelegramText(body) {
       'Спогад: ' + (body.memoryId || ''),
       'Реакція: ' + (body.reaction || ''),
       'Час: ' + (body.timestamp || '')
+    ].join('\n');
+  }
+
+  if (body.type === 'game_completed') {
+    const n = body.completedChapters != null ? body.completedChapters : 5;
+    return [
+      '🎮 Гру пройдено',
+      '',
+      '❤️ Зібрано фрагментів: ' + n + '/5',
+      '',
+      '💭 Момент, який вона хотіла б пережити ще раз:',
+      '"' + (body.answer || '…') + '"'
     ].join('\n');
   }
 

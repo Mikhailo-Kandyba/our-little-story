@@ -195,10 +195,10 @@ body,
 .mood-toast {
   position: fixed;
   left: 50%;
-  bottom: 32px;
+  bottom: unquote('calc(32px + env(safe-area-inset-bottom, 0px))');
   transform: translateX(-50%) translateY(16px);
   z-index: 420;
-  max-width: 90vw;
+  max-width: unquote('calc(100vw - 32px)');
   padding: 12px 22px;
   border-radius: 999px;
   background: var(--surface-strong);

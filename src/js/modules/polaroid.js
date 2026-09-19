@@ -10,6 +10,7 @@ export function initPolaroid() {
   let stack = memories.map((m) => Object.assign({}, m));
   let startX = 0;
   let dragging = false;
+  let didSwipe = false;
 
   function render() {
     root.innerHTML = stack
@@ -47,7 +48,13 @@ export function initPolaroid() {
     }
   }
 
-  root.addEventListener('click', () => flyTop(1));
+  root.addEventListener('click', () => {
+    if (didSwipe) {
+      didSwipe = false;
+      return;
+    }
+    flyTop(1);
+  });
   root.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -60,18 +67,34 @@ export function initPolaroid() {
       return;
     }
     dragging = true;
+    didSwipe = false;
     startX = e.clientX;
+    root.classList.add('is-dragging');
     root.setPointerCapture(e.pointerId);
+  });
+  root.addEventListener('pointermove', (e) => {
+    if (!dragging) {
+      return;
+    }
+    if (Math.abs(e.clientX - startX) > 12) {
+      didSwipe = true;
+    }
   });
   root.addEventListener('pointerup', (e) => {
     if (!dragging) {
       return;
     }
     dragging = false;
+    root.classList.remove('is-dragging');
     const dx = e.clientX - startX;
     if (Math.abs(dx) > 40) {
+      didSwipe = true;
       flyTop(dx < 0 ? -1 : 1);
     }
+  });
+  root.addEventListener('pointercancel', () => {
+    dragging = false;
+    root.classList.remove('is-dragging');
   });
 
   render();

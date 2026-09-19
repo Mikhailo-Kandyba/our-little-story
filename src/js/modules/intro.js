@@ -51,11 +51,11 @@ function renderFloatingPhotos(intro) {
   }
   const picks = memories.slice(0, 5);
   const positions = [
-    { t: '12%', l: '8%', r: '-8deg' },
-    { t: '18%', l: '78%', r: '6deg' },
-    { t: '62%', l: '6%', r: '5deg' },
-    { t: '68%', l: '76%', r: '-7deg' },
-    { t: '40%', l: '86%', r: '3deg' }
+    { t: '10%', l: '4%', r: '-8deg' },
+    { t: '14%', l: '70%', r: '6deg' },
+    { t: '64%', l: '5%', r: '5deg' },
+    { t: '68%', l: '68%', r: '-7deg' },
+    { t: '38%', l: '74%', r: '3deg' }
   ];
   stage.innerHTML = picks
     .map((m, i) => {

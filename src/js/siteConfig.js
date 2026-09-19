@@ -353,3 +353,149 @@ export const ui = {
   sending: 'Надсилаю…',
   sendError: 'Не вийшло надіслати. Спробуй ще раз трохи згодом.'
 };
+
+/**
+ * ============================================================
+ *  STORY GAME — «Збери нашу історію»
+ * ============================================================
+ * Замінюй фото / тексти / звуки тут. Не чіпай selectedMood.
+ * Звуки (опційно): src/audio/game-*.mp3 — див. audio/README.txt
+ */
+export const GAME_STORAGE_KEY = 'storyGameProgress';
+
+export const gameSection = {
+  eyebrow: 'Маленька гра',
+  heading: 'У мене є для тебе маленька гра 💗',
+  lead: 'Пʼять розділів. Пʼять фрагментів серця. Одна спільна історія.',
+  startButton: 'Почати'
+};
+
+export const gameContent = {
+  title: 'Збери нашу історію',
+  titleWithHeart: 'Збери нашу історію 💗',
+  subtitle: 'Деякі моменти залишаються з нами довше, ніж ми думаємо.',
+  startStory: 'Почати історію',
+  close: 'Закрити гру',
+  restart: 'Почати спочатку',
+  fragmentsLabel: 'Фрагменти',
+  chapterTransitionMs: 900,
+
+  // --- Chapter 1: fog reveal ---
+  reveal: {
+    title: 'Спогад №1',
+    subtitle: 'Іноді достатньо стерти трохи туману...',
+    photo: 'img/memories/memory-01.jpeg',
+    photoAlt: 'Спогад — фото для розкриття',
+    progressLabel: 'Спогад відкрито на',
+    completeAt: 0.75,
+    afterReveal: 'Памʼятаєш цей момент? 💗',
+    choices: [
+      'Так, звісно 🥹',
+      'Щось пригадую 😌',
+      'Тепер точно памʼятаю ❤️'
+    ]
+  },
+
+  // --- Chapter 2: catch moments ---
+  catch: {
+    title: 'Лови хороші моменти',
+    subtitle: 'Хороші моменти іноді пролітають дуже швидко.',
+    durationSec: 20,
+    scoreLabel: 'Зібрано моментів:',
+    endLabel: 'Ти зібрала',
+    endSuffix: 'хороших моментів 💗',
+    polaroidPhotos: [
+      'img/memories/memory-02.jpg',
+      'img/memories/memory-03.jpg',
+      'img/memories/memory-05.jpg'
+    ]
+  },
+
+  // --- Chapter 3: puzzle ---
+  puzzle: {
+    title: 'Склади момент',
+    subtitle: 'Деякі речі складаються з маленьких шматочків.',
+    photo: 'img/memories/memory-04.jpg',
+    photoAlt: 'Фото-пазл',
+    helpButton: 'Трошки допомогти ✨',
+    helpAfterMs: 12000,
+    done: 'Готово 💗',
+    afterText: 'Є моменти, які хочеться складати знову і знову.'
+  },
+
+  // --- Chapter 4: maze ---
+  maze: {
+    title: 'Лабіринт спогадів',
+    subtitle: 'Пройди тихо. Чотири спогади чекають.',
+    exitFound: 'Вихід знайдено ✨',
+    objects: {
+      photo: {
+        icon: '📷',
+        label: 'Фото',
+        image: 'img/memories/memory-06.jpg',
+        text: 'Цей кадр досі світиться мʼяко.'
+      },
+      note: {
+        icon: '💌',
+        label: 'Нотатка',
+        text: 'Деякі слова хочеться залишити тут, щоб вони не загубилися.'
+      },
+      memory: {
+        icon: '✨',
+        label: 'Спогад',
+        text: 'Маленький момент, який чомусь залишився в памʼяті.'
+      },
+      music: {
+        icon: '🎵',
+        label: 'Музика',
+        text: 'Тут може звучати наша пісня 🎵',
+        audio: '' // наприклад: 'audio/game-memory.mp3'
+      }
+    }
+  },
+
+  // --- Chapter 5: hidden fragment ---
+  hidden: {
+    title: 'Залишився один фрагмент...',
+    subtitle: 'Пошукай уважно серед спогадів.',
+    decoyMessages: [
+      'Не тут 😌',
+      'Майже...',
+      'Шукай далі ✨',
+      'Тепліше 💗'
+    ],
+    collagePhotos: [
+      'img/memories/memory-02.jpg',
+      'img/memories/memory-07.jpg',
+      'img/memories/memory-08.jpg',
+      'img/memories/memory-03.jpg'
+    ]
+  },
+
+  // --- Finale ---
+  finale: {
+    foundAll: 'Ти знайшла всі спогади.',
+    oneQuestion: 'І залишилося лише одне маленьке питання...',
+    question: 'Який момент ти хотіла б пережити ще раз? 💭',
+    options: [
+      'Одна з наших прогулянок',
+      'Один із наших вечорів',
+      'Одна з наших поїздок'
+    ],
+    customOption: 'Свій варіант',
+    customPlaceholder: 'Напиши тут, якщо хочеш…',
+    save: 'Зберегти відповідь 💗',
+    thanks: 'Дякую, що пройшла цю маленьку історію 💗',
+    replay: 'Переглянути спогади ще раз',
+    backToSite: 'Повернутися на сайт',
+    revealPhoto: 'img/memories/memory-05.jpg'
+  },
+
+  // --- Optional SFX paths (empty = silent, game still works) ---
+  sounds: {
+    ui: '', // 'audio/game-ui.mp3'
+    success: '', // 'audio/game-success.mp3'
+    heart: '', // 'audio/game-heart.mp3'
+    memory: '' // 'audio/game-memory.mp3'
+  }
+};

@@ -27,11 +27,23 @@ export function sendNotification(data) {
   })
     .then((res) => {
       if (!res.ok) {
-        throw new Error('notify_failed');
+        const err = new Error('notify_failed');
+        err.status = res.status;
+        throw err;
       }
       return res.json().catch(() => ({ ok: true }));
     })
-    .catch(() => simulate(payload));
+    .catch((err) => {
+      // HTTP failures (400/429/500) must reach callers — do not soft-succeed.
+      if (err && typeof err.status === 'number') {
+        if (typeof console !== 'undefined' && console.error) {
+          console.error('[notify] request failed', 'status=' + err.status);
+        }
+        return Promise.reject(err);
+      }
+      // Network / unexpected: soft-fail so other UX (booking, reactions) stays intact.
+      return simulate(payload);
+    });
 }
 
 function simulate(payload) {

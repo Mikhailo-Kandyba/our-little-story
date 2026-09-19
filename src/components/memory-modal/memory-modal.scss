@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: unquote('max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left))');
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.35s var(--ease), visibility 0.35s var(--ease);
@@ -28,8 +28,10 @@
   z-index: 1;
   width: 920px;
   max-width: 100%;
-  max-height: unquote('calc(100vh - 48px)');
+  max-height: unquote('calc(100vh - 32px)');
+  max-height: unquote('calc(100dvh - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))');
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   background: #fffefc;
   border: 1px solid var(--border);
   border-radius: 24px;
@@ -44,17 +46,20 @@
 
 .memory-modal__close {
   position: absolute;
-  top: 14px;
-  right: 16px;
+  top: 12px;
+  right: 12px;
   z-index: 2;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.9);
   color: var(--text);
   font-size: 24px;
   line-height: 1;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .memory-modal__media {
@@ -72,6 +77,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .memory-modal__body {
@@ -80,9 +86,11 @@
 
 .memory-modal__title {
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: unquote('clamp(22px, 5vw, 28px)');
   font-weight: 500;
   margin: 0 0 8px;
+  padding-right: 40px;
+  overflow-wrap: break-word;
 }
 
 .memory-modal__date {
@@ -97,17 +105,29 @@
 .memory-modal__text {
   margin: 0;
   color: var(--text-muted);
-  font-size: 17px;
+  font-size: unquote('clamp(15px, 2.4vw, 17px)');
   line-height: 1.7;
   max-width: 640px;
+  overflow-wrap: break-word;
 }
 
 @media (max-width: 600px) {
+  .memory-modal {
+    align-items: flex-end;
+    padding: 12px;
+    padding-bottom: unquote('max(12px, env(safe-area-inset-bottom))');
+  }
+
+  .memory-modal__dialog {
+    border-radius: 20px 20px 16px 16px;
+    max-height: unquote('calc(100dvh - 24px - env(safe-area-inset-top, 0px))');
+  }
+
   .memory-modal__media {
-    padding-bottom: 125%;
+    padding-bottom: 100%;
   }
 
   .memory-modal__body {
-    padding: 20px;
+    padding: 18px 18px 24px;
   }
 }

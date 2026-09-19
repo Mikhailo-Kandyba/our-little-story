@@ -138,4 +138,16 @@
     left: 8px;
     right: auto;
   }
+
+  .timeline__item {
+    margin-bottom: 28px;
+  }
+}
+
+@media (max-width: 374px) {
+  .timeline__item,
+  .timeline__item_left,
+  .timeline__item_right {
+    padding-left: 32px;
+  }
 }

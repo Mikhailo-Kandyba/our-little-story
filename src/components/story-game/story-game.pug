@@ -1,0 +1,17 @@
+mixin story-game-teaser
+  section.section.sg-teaser#story-game(aria-labelledby="story-game-title", data-story-game-teaser, data-reveal)
+    p.section__eyebrow(data-game-eyebrow)
+    h2#story-game-title.section__title(data-game-heading)
+    p.section__lead(data-game-lead)
+    .sg-teaser__actions
+      button.btn.btn_primary(type="button", data-game-open) Почати
+
+mixin story-game-overlay
+  .story-game(data-story-game, hidden, aria-hidden="true", role="dialog", aria-modal="true", aria-label="Збери нашу історію")
+    .story-game__backdrop
+    .story-game__panel
+      header.story-game__header
+        button.story-game__icon-btn(type="button", data-game-close, aria-label="Закрити гру") ✕
+        .sg-progress(data-game-progress, aria-live="polite")
+        button.story-game__text-btn(type="button", data-game-restart) Почати спочатку
+      .story-game__stage(data-game-stage)

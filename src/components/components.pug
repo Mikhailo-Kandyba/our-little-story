@@ -5,6 +5,7 @@ include ./carousel/carousel
 include ./polaroid/polaroid
 include ./random-memory/random-memory
 include ./quiz/quiz
+include ./story-game/story-game
 include ./mood/mood
 include ./message/message
 include ./final/final
@@ -25,6 +26,7 @@ mixin components(data)
     +polaroid
     +random-memory
     +quiz
+    +story-game-teaser
     +mood
     p.whisper.whisper_quiet(data-reveal)
     +message
@@ -32,4 +34,5 @@ mixin components(data)
     +closing
   +memory-modal
   +booking-modal
+  +story-game-overlay
   audio.ambient(data-ambient-audio, loop, preload="none", aria-hidden="true")
