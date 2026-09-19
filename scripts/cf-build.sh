@@ -49,10 +49,13 @@ case "$NPM_V" in
     ;;
 esac
 
-# Do not use npm 7+ flags (--legacy-peer-deps). npm 6 matches local.
-# ignore-engines: package.json also lists modern wrangler (engines >=22).
-echo "==> npm install (Node 10 / npm 6, --ignore-engines)"
-npm install --ignore-engines
+# Prefer deterministic install from npm 6 lockfile (lockfileVersion 1).
+# Falls back to npm install if ci is unavailable.
+echo "==> npm ci (Node 10 / npm 6, --ignore-engines)"
+if ! npm ci --ignore-engines; then
+  echo "WARN: npm ci failed; falling back to npm install --ignore-engines" >&2
+  npm install --ignore-engines
+fi
 
 echo "==> Production landing build → dist/land-story"
 npm run build --prefix landings/land-story
