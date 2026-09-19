@@ -82,7 +82,7 @@ export const timeline = [
 export const memories = [
   {
     id: 'm1',
-    image: 'img/memories/memory-01.jpg',
+    image: 'img/memories/memory-01.jpeg',
     date: 'Весна 2024',
     text: 'Світло того дня було мʼякшим, ніж зазвичай.',
     caption: 'мʼяке світло'
