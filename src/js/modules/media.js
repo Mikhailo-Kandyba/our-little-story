@@ -47,7 +47,10 @@ export function videoMarkup(item, options) {
   const secret = opts.secret ? ' data-memory-secret="1"' : '';
   const label = attr((item && (item.title || item.alt || item.date)) || 'Відео');
 
-  return '<video class="story-video" controls playsinline webkit-playsinline preload="none" draggable="false" aria-label="' +
+  const preload = keepsPreloadNone(src) ? 'none' : 'metadata';
+
+  return '<video class="story-video" controls playsinline webkit-playsinline preload="' +
+    preload + '" draggable="false" aria-label="' +
     label + '"' + poster + secret + ' data-media-video>' +
     '<source src="' + attr(src) + '"' + type + '>' +
     '</video>';

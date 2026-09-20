@@ -3,9 +3,9 @@
  *  SITE CONFIG — увесь персональний контент тут
  * ============================================================
  * Фото: src/img/memories/memory-01.jpg …
- * Відео: MP4 (H.264 + AAC) у src/img/memories/
- *   { type: 'video', src: 'img/memories/clip.mp4', poster: 'img/memories/poster.jpeg', title: '...', text: '...' }
- *   poster необовʼязковий. Поле image теж підходить замість src. .mov краще конвертувати в .mp4.
+ * Відео: MP4 (H.264 + AAC) на Cloudflare R2 (див. R2_MEDIA_BASE_URL).
+ *   { type: 'video', src: R2_MEDIA_BASE_URL + '/clip.mp4', poster: 'img/memories/poster.jpeg', title: '...', text: '...' }
+ *   poster необовʼязковий. Поле image теж підходить замість src.
  * Аудіо (опційно): src/audio/ambient.mp3
  *
  * NOTIFY_ENDPOINT — публічний Worker endpoint (/api/telegram).
@@ -19,6 +19,10 @@ export const CONTACT_URL = '#';
 
 /** Публічний endpoint. Порожній рядок = симуляція (console + sessionStorage). */
 export const NOTIFY_ENDPOINT = '/api/telegram';
+
+/** Публічний Cloudflare R2 base. Відео не класти в src/img — лише зовнішні URL. */
+export const R2_MEDIA_BASE_URL =
+  'https://pub-31f945531ebd449a91b3af7e180695d8.r2.dev';
 
 export const ambientAudio = 'audio/ambient.mp3';
 
@@ -45,7 +49,7 @@ export const timeline = [
     title: 'Перша зустріч',
     text: 'З цього все почалося 🤍' +
       'Звичайний вечір, звичайне відео… А поруч дівчина, яка згодом стала для мене зовсім не звичайною.',
-    image: 'img/memories/1-meet.mp4'
+    image: R2_MEDIA_BASE_URL + '/1-meet.mp4'
   },
   {
     id: 'date',
@@ -53,7 +57,7 @@ export const timeline = [
     date: '18 грудня 2025',
     title: 'Наше перше побачення 🤍',
     text: 'Останній ряд, мультик і момент, коли я вперше взяв тебе за руку. Пам’ятаю це тепло досі. Потім ми ще довго гуляли, я проводжав тебе додому… і зовсім не хотів, щоб цей вечір закінчувався. 🥺',
-    image: 'img/memories/1-date.mp4'
+    image: R2_MEDIA_BASE_URL + '/1-date.mp4'
   },
   {
     id: 'evening',
@@ -68,7 +72,7 @@ export const timeline = [
     date: '28 Грудня 2025',
     title: 'Коли ми просто дуріли 😂🤍',
     text: 'Я вже навіть не пам’ятаю, що саме намагався тут повторити 😂 Але пам’ятаю тебе за камерою, наш сміх і те, як легко нам було разом. Саме з таких маленьких і трохи дурних моментів і складаються мої найтепліші спогади про нас.',
-    image: 'img/memories/1-funny-1.mp4'
+    image: R2_MEDIA_BASE_URL + '/1-funny-1.mp4'
   },
   {
     id: 'funny',
@@ -76,7 +80,7 @@ export const timeline = [
     date: '18 Січня 2026',
     title: 'Один із тих моментів, де просто ми 🤍',
     text: 'Блекаут, одна лампочка, якийсь рілс, який ми вирішили повторити, і купа сміху. Ти поруч, обіймаєш мене, цілуєш, ми дуріємо… І мені в той момент більше нічого не було потрібно. Просто було дуже тепло з тобою. 🥺',
-    image: 'img/memories/1-funny.mp4'
+    image: R2_MEDIA_BASE_URL + '/1-funny.mp4'
   },
   {
     id: 'important',
