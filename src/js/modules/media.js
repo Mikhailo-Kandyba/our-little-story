@@ -7,6 +7,8 @@ const VIDEO_MIME = {
   mov: 'video/quicktime'
 };
 
+let exclusiveBound = false;
+
 export function mediaPath(item) {
   if (!item) {
     return '';
@@ -38,6 +40,34 @@ export function pointerOnVideo(event) {
   return !!target.closest('video');
 }
 
+export function ensureExclusivePlayback() {
+  if (exclusiveBound) {
+    return;
+  }
+  exclusiveBound = true;
+  document.addEventListener(
+    'play',
+    (event) => {
+      const active = event.target;
+      if (!active || active.tagName !== 'VIDEO') {
+        return;
+      }
+      pauseOtherVideos(active);
+    },
+    true
+  );
+}
+
+export function pauseOtherVideos(except) {
+  const list = document.querySelectorAll('video');
+  for (let i = 0; i < list.length; i++) {
+    const video = list[i];
+    if (video !== except && !video.paused) {
+      video.pause();
+    }
+  }
+}
+
 export function videoMarkup(item, options) {
   const opts = options || {};
   const src = mediaPath(item);
@@ -46,14 +76,69 @@ export function videoMarkup(item, options) {
   const type = mime ? ' type="' + mime + '"' : '';
   const secret = opts.secret ? ' data-memory-secret="1"' : '';
   const label = attr((item && (item.title || item.alt || item.date)) || 'Відео');
-
-  const preload = keepsPreloadNone(src) ? 'none' : 'metadata';
+  let preload = 'metadata';
+  if (opts.lazy || keepsPreloadNone(src)) {
+    preload = 'none';
+  }
+  const source = opts.lazy
+    ? ''
+    : '<source src="' + attr(src) + '"' + type + '>';
 
   return '<video class="story-video" controls playsinline webkit-playsinline preload="' +
     preload + '" draggable="false" aria-label="' +
-    label + '"' + poster + secret + ' data-media-video>' +
-    '<source src="' + attr(src) + '"' + type + '>' +
+    label + '"' + poster + secret +
+    ' data-media-video data-lazy-src="' + attr(src) + '">' +
+    source +
     '</video>';
+}
+
+export function ensureVideoSource(video, item) {
+  if (!video) {
+    return;
+  }
+  const src = item ? mediaPath(item) : video.getAttribute('data-lazy-src') || '';
+  if (!src) {
+    return;
+  }
+  const current = video.querySelector('source');
+  if (current && current.getAttribute('src') === src) {
+    if (video.preload === 'none' && !keepsPreloadNone(src)) {
+      video.preload = 'metadata';
+    }
+    return;
+  }
+  while (video.firstChild) {
+    video.removeChild(video.firstChild);
+  }
+  const source = document.createElement('source');
+  source.src = src;
+  const mime = videoMime(src);
+  if (mime) {
+    source.type = mime;
+  }
+  video.appendChild(source);
+  video.setAttribute('data-lazy-src', src);
+  video.preload = keepsPreloadNone(src) ? 'none' : 'metadata';
+  video.load();
+}
+
+export function unloadVideoSource(video) {
+  if (!video) {
+    return;
+  }
+  video.pause();
+  try {
+    video.currentTime = 0;
+  } catch (err) {
+    // ignore seek errors on empty media
+  }
+  while (video.firstChild) {
+    video.removeChild(video.firstChild);
+  }
+  video.removeAttribute('src');
+  video.preload = 'none';
+  video.load();
+  video.removeAttribute('data-media-ready');
 }
 
 export function mountVideo(video, item) {
@@ -79,6 +164,7 @@ export function mountVideo(video, item) {
     source.type = mime;
   }
   video.appendChild(source);
+  video.setAttribute('data-lazy-src', src);
   video.preload = keepsPreloadNone(src) ? 'none' : 'metadata';
   if (video.preload === 'metadata') {
     video.load();
@@ -126,6 +212,9 @@ export function armVideoPreload(root) {
 
 function primeVideo(video) {
   if (!video || video.getAttribute('data-media-ready') === '1') {
+    return;
+  }
+  if (video.getAttribute('data-lazy-src') && !video.querySelector('source')) {
     return;
   }
   video.setAttribute('data-media-ready', '1');

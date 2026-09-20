@@ -2,7 +2,7 @@ import { onReady } from './modules/utils';
 import { initIntro } from './modules/intro';
 import { initReveal } from './modules/reveal';
 import { initTimeline } from './modules/timeline';
-import { initCarousel } from './modules/carousel';
+import { initCarousel, initVideoCarousel } from './modules/carousel';
 import { initPolaroid } from './modules/polaroid';
 import { initRandomMemory } from './modules/random-memory';
 import { initQuiz } from './modules/quiz';
@@ -13,6 +13,7 @@ import { initFinal } from './modules/booking';
 import { initEffects } from './modules/effects';
 import { initEasterEggs } from './modules/easter-eggs';
 import { restoreMoodTheme } from './modules/mood-theme';
+import { ensureExclusivePlayback } from './modules/media';
 import {
   story,
   message,
@@ -20,6 +21,7 @@ import {
   finalSection,
   closing,
   carouselSection,
+  videoMomentsSection,
   polaroidSection,
   moodSection,
   ui
@@ -27,6 +29,7 @@ import {
 
 onReady(() => {
   hydrateStaticCopy();
+  ensureExclusivePlayback();
 
   const memoryModal = initMemoryModal();
 
@@ -40,6 +43,7 @@ onReady(() => {
     onOpenMemory: (item) => memoryModal.open(item)
   });
   initCarousel();
+  initVideoCarousel();
   initPolaroid();
   initRandomMemory();
   initQuiz();
@@ -85,6 +89,10 @@ function hydrateStaticCopy() {
   setText('[data-carousel-eyebrow]', carouselSection.eyebrow);
   setText('#carousel-title', carouselSection.heading);
   setText('[data-carousel-lead]', carouselSection.lead);
+
+  setText('[data-video-moments-eyebrow]', videoMomentsSection.eyebrow);
+  setText('#video-moments-title', videoMomentsSection.heading);
+  setText('[data-video-moments-lead]', videoMomentsSection.lead);
 
   setText('[data-polaroid-eyebrow]', polaroidSection.eyebrow);
   setText('#polaroid-title', polaroidSection.heading);

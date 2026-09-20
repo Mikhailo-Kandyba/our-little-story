@@ -2,6 +2,7 @@ include ./intro/intro
 include ./story/story
 include ./timeline/timeline
 include ./carousel/carousel
+include ./video-moments/video-moments
 include ./polaroid/polaroid
 include ./random-memory/random-memory
 include ./quiz/quiz
@@ -23,6 +24,7 @@ mixin components(data)
     +timeline
     p.whisper(data-reveal)
     +carousel
+    +video-moments
     +polaroid
     +random-memory
     +quiz
