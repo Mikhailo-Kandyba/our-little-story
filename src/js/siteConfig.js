@@ -24,13 +24,46 @@ export const NOTIFY_ENDPOINT = '/api/telegram';
 export const R2_MEDIA_BASE_URL =
   'https://pub-31f945531ebd449a91b3af7e180695d8.r2.dev';
 
+/** Гучність фонової музики (0–1). */
+export const BACKGROUND_VOLUME = 0.25;
+
 export const ambientAudio = 'audio/ambient.mp3';
+
+export const VISITOR_NAME_KEY = 'olsVisitorName';
+export const VISITOR_ID_KEY = 'olsVisitorId';
+export const VISITOR_NAME_MAX = 40;
 
 export const intro = {
   greeting: `Привіт, Настю 💗`,
   text: 'Я міг просто написати тобі повідомлення.\nАле вирішив зробити дещо цікавіше.',
-  button: 'Відкрити ✨'
+  nameLabel: 'Як тебе звати? 🤍',
+  namePlaceholder: 'Твоє імʼя',
+  nameError: 'Напиши, будь ласка, як тебе звати',
+  privacyNote: 'Для роботи сторінки зберігається технічна інформація про відвідування.',
+  button: 'Відкрити нашу історію'
 };
+
+/**
+ * Одне розмовне відео перед фіналом.
+ * file — імʼя файлу в R2 (наприклад 'personal-message.mp4') або повний URL.
+ * Порожній file = section не показується.
+ */
+export const personalVideo = {
+  file: '',
+  eyebrow: 'Особисто',
+  heading: 'І ще дещо, що я хочу сказати тобі особисто 🤍'
+};
+
+export function getPersonalVideoUrl() {
+  const file = personalVideo.file ? String(personalVideo.file).trim() : '';
+  if (!file) {
+    return '';
+  }
+  if (/^https?:\/\//i.test(file)) {
+    return file;
+  }
+  return R2_MEDIA_BASE_URL + '/' + file.replace(/^\//, '');
+}
 
 export const story = {
   heading: 'Дещо варто памʼятати.',

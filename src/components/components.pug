@@ -9,6 +9,7 @@ include ./quiz/quiz
 include ./story-game/story-game
 include ./mood/mood
 include ./message/message
+include ./personal-video/personal-video
 include ./final/final
 include ./closing/closing
 include ./memory-modal/memory-modal
@@ -32,6 +33,7 @@ mixin components(data)
     +mood
     p.whisper.whisper_quiet(data-reveal)
     +message
+    +personal-video
     +final
     +closing
   +memory-modal

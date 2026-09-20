@@ -6,6 +6,7 @@
  */
 
 import { NOTIFY_ENDPOINT } from '../siteConfig';
+import { getVisitorId, getVisitorName } from '../modules/visitor';
 
 /**
  * @param {object} data
@@ -13,7 +14,9 @@ import { NOTIFY_ENDPOINT } from '../siteConfig';
  */
 export function sendNotification(data) {
   const payload = Object.assign({}, data, {
-    timestamp: data.timestamp || new Date().toISOString()
+    timestamp: data.timestamp || new Date().toISOString(),
+    visitorName: data.visitorName || getVisitorName(),
+    visitorId: data.visitorId || getVisitorId()
   });
 
   if (!NOTIFY_ENDPOINT) {
@@ -34,14 +37,12 @@ export function sendNotification(data) {
       return res.json().catch(() => ({ ok: true }));
     })
     .catch((err) => {
-      // HTTP failures (400/429/500) must reach callers — do not soft-succeed.
       if (err && typeof err.status === 'number') {
         if (typeof console !== 'undefined' && console.error) {
           console.error('[notify] request failed', 'status=' + err.status);
         }
         return Promise.reject(err);
       }
-      // Network / unexpected: soft-fail so other UX (booking, reactions) stays intact.
       return simulate(payload);
     });
 }

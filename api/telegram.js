@@ -3,10 +3,17 @@
  * Secrets only from env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID.
  */
 
-export const ALLOWED_TYPES = ['mood', 'booking', 'reaction', 'game_completed'];
+export const ALLOWED_TYPES = [
+  'visit',
+  'mood',
+  'booking',
+  'reaction',
+  'game_completed'
+];
 
 const MAX_TEXT = 500;
 const MAX_ID = 64;
+const MAX_NAME = 40;
 
 function clip(value, max) {
   if (value == null) {
@@ -14,6 +21,24 @@ function clip(value, max) {
   }
   const str = String(value).trim();
   return str.length > max ? str.slice(0, max) : str;
+}
+
+function visitorFields(body) {
+  return {
+    visitorName: clip(body.visitorName, MAX_NAME),
+    visitorId: clip(body.visitorId, MAX_ID)
+  };
+}
+
+function visitorLines(body) {
+  const lines = [];
+  if (body.visitorName) {
+    lines.push('👤 Імʼя: ' + body.visitorName);
+  }
+  if (body.visitorId) {
+    lines.push('🆔 Visitor: ' + body.visitorId);
+  }
+  return lines;
 }
 
 /**
@@ -30,21 +55,39 @@ export function validatePayload(body) {
     return { ok: false, error: 'invalid_type' };
   }
 
-  // Never accept client-supplied chat routing
   if (body.chat_id != null || body.chatId != null || body.token != null) {
     return { ok: false, error: 'forbidden_fields' };
+  }
+
+  const visitor = visitorFields(body);
+
+  if (type === 'visit') {
+    return {
+      ok: true,
+      data: Object.assign(
+        {
+          type,
+          device: clip(body.device, 80),
+          timestamp: clip(body.timestamp, 64)
+        },
+        visitor
+      )
+    };
   }
 
   if (type === 'mood') {
     return {
       ok: true,
-      data: {
-        type,
-        mood: clip(body.mood, 80),
-        emoji: clip(body.emoji, 16),
-        message: clip(body.message, MAX_TEXT),
-        timestamp: clip(body.timestamp, 64)
-      }
+      data: Object.assign(
+        {
+          type,
+          mood: clip(body.mood, 80),
+          emoji: clip(body.emoji, 16),
+          message: clip(body.message, MAX_TEXT),
+          timestamp: clip(body.timestamp, 64)
+        },
+        visitor
+      )
     };
   }
 
@@ -52,14 +95,17 @@ export function validatePayload(body) {
     const bookingType = body.bookingType === 'call' ? 'call' : 'meet';
     return {
       ok: true,
-      data: {
-        type,
-        bookingType,
-        date: clip(body.date, 40),
-        dateLabel: clip(body.dateLabel, 120),
-        time: clip(body.time, 40),
-        timestamp: clip(body.timestamp, 64)
-      }
+      data: Object.assign(
+        {
+          type,
+          bookingType,
+          date: clip(body.date, 40),
+          dateLabel: clip(body.dateLabel, 120),
+          time: clip(body.time, 40),
+          timestamp: clip(body.timestamp, 64)
+        },
+        visitor
+      )
     };
   }
 
@@ -67,71 +113,129 @@ export function validatePayload(body) {
     const chapters = Number(body.completedChapters);
     return {
       ok: true,
-      data: {
-        type,
-        answer: clip(body.answer, MAX_TEXT),
-        completedChapters: Number.isFinite(chapters)
-          ? Math.max(0, Math.min(5, Math.round(chapters)))
-          : 5,
-        timestamp: clip(body.timestamp, 64)
-      }
+      data: Object.assign(
+        {
+          type,
+          answer: clip(body.answer, MAX_TEXT),
+          completedChapters: Number.isFinite(chapters)
+            ? Math.max(0, Math.min(5, Math.round(chapters)))
+            : 5,
+          timestamp: clip(body.timestamp, 64)
+        },
+        visitor
+      )
     };
   }
 
   return {
     ok: true,
-    data: {
-      type,
-      memoryId: clip(body.memoryId, MAX_ID),
-      reaction: clip(body.reaction, 16),
-      timestamp: clip(body.timestamp, 64)
-    }
+    data: Object.assign(
+      {
+        type,
+        memoryId: clip(body.memoryId, MAX_ID),
+        reaction: clip(body.reaction, 16),
+        timestamp: clip(body.timestamp, 64)
+      },
+      visitor
+    )
   };
 }
 
+function formatLocalTime(iso) {
+  if (!iso) {
+    return '';
+  }
+  // Client may already send a display-friendly timestamp.
+  if (/^\d{2}\.\d{2}\.\d{4}/.test(String(iso))) {
+    return String(iso);
+  }
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return String(iso);
+  }
+  const pad = (n) => (n < 10 ? '0' + n : String(n));
+  return (
+    pad(date.getUTCDate()) +
+    '.' +
+    pad(date.getUTCMonth() + 1) +
+    '.' +
+    date.getUTCFullYear() +
+    ' ' +
+    pad(date.getUTCHours()) +
+    ':' +
+    pad(date.getUTCMinutes()) +
+    ' UTC'
+  );
+}
+
 export function formatTelegramText(body) {
-  if (body.type === 'mood') {
+  if (body.type === 'visit') {
+    const place = [body.city, body.region, body.country]
+      .filter(Boolean)
+      .join(', ');
     return [
-      'Новий настрій 💭',
-      '',
-      'Настрій: ' + (body.mood || '') + ' ' + (body.emoji || ''),
-      'Повідомлення: ' + (body.message || '(без тексту)'),
-      'Час: ' + (body.timestamp || '')
-    ].join('\n');
+      '💌 Новий візит на Our Little Story',
+      ''
+    ]
+      .concat(visitorLines(body))
+      .concat([
+        '📍 Приблизне місце: ' + (place || 'невідомо'),
+        '🌐 IP: ' + (body.ip || 'невідомо'),
+        '📱 Пристрій: ' + (body.device || 'Unknown'),
+        '🕐 Час: ' + formatLocalTime(body.timestamp),
+        '',
+        'Відкрила нашу історію 🤍'
+      ])
+      .join('\n');
+  }
+
+  if (body.type === 'mood') {
+    return ['Новий настрій 💭', '']
+      .concat(visitorLines(body))
+      .concat([
+        'Настрій: ' + (body.mood || '') + ' ' + (body.emoji || ''),
+        'Повідомлення: ' + (body.message || '(без тексту)'),
+        'Час: ' + (body.timestamp || '')
+      ])
+      .join('\n');
   }
 
   if (body.type === 'booking') {
     const typeLabel = body.bookingType === 'call' ? 'Зідзвонитися' : 'Побачитися';
-    return [
-      'Нове бронювання 💗',
-      '',
-      'Тип: ' + typeLabel,
-      'Дата: ' + (body.dateLabel || body.date || ''),
-      'Час: ' + (body.time || ''),
-      'Час запиту: ' + (body.timestamp || '')
-    ].join('\n');
+    return ['Нове бронювання 💗', '']
+      .concat(visitorLines(body))
+      .concat([
+        'Тип: ' + typeLabel,
+        'Дата: ' + (body.dateLabel || body.date || ''),
+        'Час: ' + (body.time || ''),
+        'Час запиту: ' + (body.timestamp || '')
+      ])
+      .join('\n');
   }
 
   if (body.type === 'reaction') {
-    return [
-      'Реакція на спогад',
-      '',
-      'Спогад: ' + (body.memoryId || ''),
-      'Реакція: ' + (body.reaction || ''),
-      'Час: ' + (body.timestamp || '')
-    ].join('\n');
+    return ['❤️ Реакція', '']
+      .concat(visitorLines(body))
+      .concat([
+        '❤️ Реакція: ' + (body.reaction || ''),
+        '📍 Розділ: Наші спогади',
+        'Спогад: ' + (body.memoryId || ''),
+        'Час: ' + (body.timestamp || '')
+      ])
+      .join('\n');
   }
 
   if (body.type === 'game_completed') {
     const n = body.completedChapters != null ? body.completedChapters : 5;
-    return [
-      '🎮 Гру пройдено',
-      '',
-      '❤️ Зібрано фрагментів: ' + n + '/5',
-      '',
-      '💭 Момент, який вона хотіла б пережити ще раз:',
-      '"' + (body.answer || '…') + '"'
-    ].join('\n');
+    return ['🎮 Гру пройдено', '']
+      .concat(visitorLines(body))
+      .concat([
+        '❤️ Зібрано фрагментів: ' + n + '/5',
+        '',
+        '💭 Момент, який вона хотіла б пережити ще раз:',
+        '"' + (body.answer || '…') + '"'
+      ])
+      .join('\n');
   }
 
   return '';
@@ -168,7 +272,6 @@ export async function sendTelegramMessage(env, text) {
   }
 
   if (!res.ok) {
-    // Do not forward raw Telegram body (may be verbose); keep status only.
     return { ok: false, reason: 'telegram_http_' + res.status };
   }
 
@@ -197,6 +300,17 @@ export function jsonResponse(payload, status, extraHeaders) {
     extraHeaders || {}
   );
   return new Response(JSON.stringify(payload), { status: status, headers: headers });
+}
+
+function requestMeta(request) {
+  const headers = request.headers || { get: function () { return null; } };
+  const cf = request.cf || {};
+  return {
+    ip: clip(headers.get('CF-Connecting-IP') || headers.get('X-Forwarded-For') || '', 64),
+    country: clip(cf.country, 64),
+    region: clip(cf.region || cf.regionCode, 80),
+    city: clip(cf.city, 80)
+  };
 }
 
 /**
@@ -231,9 +345,13 @@ export async function handleTelegramRequest(request, env) {
     return jsonResponse({ ok: false, error: validated.error }, 400);
   }
 
-  const data = Object.assign({}, validated.data, {
+  let data = Object.assign({}, validated.data, {
     timestamp: validated.data.timestamp || new Date().toISOString()
   });
+
+  if (data.type === 'visit') {
+    data = Object.assign({}, data, requestMeta(request));
+  }
 
   const text = formatTelegramText(data);
   const result = await sendTelegramMessage(env, text);

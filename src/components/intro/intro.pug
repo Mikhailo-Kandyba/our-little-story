@@ -9,4 +9,18 @@ mixin intro
         | Я міг просто написати тобі повідомлення.
         br
         | Але вирішив зробити дещо цікавіше.
-      button.btn.btn_primary.intro__open(type="button", data-intro-open, data-magnetic) Відкрити ✨
+      .intro__name-block
+        label.intro__name-label(for="intro-name", data-intro-name-label) Як тебе звати? 🤍
+        input#intro-name.intro__name-input(
+          type="text",
+          name="visitorName",
+          autocomplete="given-name",
+          maxlength="40",
+          enterkeyhint="go",
+          data-intro-name,
+          aria-describedby="intro-name-error intro-privacy"
+        )
+        p#intro-name-error.intro__name-error(data-intro-name-error, hidden, role="alert")
+      button.btn.btn_primary.intro__open(type="button", data-intro-open, data-magnetic, disabled, aria-disabled="true") Відкрити нашу історію
+      p#intro-privacy.intro__privacy(data-intro-privacy)
+        | Для роботи сторінки зберігається технічна інформація про відвідування.

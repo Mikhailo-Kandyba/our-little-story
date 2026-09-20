@@ -14,6 +14,9 @@ import { initEffects } from './modules/effects';
 import { initEasterEggs } from './modules/easter-eggs';
 import { restoreMoodTheme } from './modules/mood-theme';
 import { ensureExclusivePlayback } from './modules/media';
+import { initAmbientMusic } from './modules/ambient';
+import { initPersonalVideo } from './modules/personal-video';
+import { ensureVisitorSession } from './modules/visitor';
 import {
   story,
   message,
@@ -28,7 +31,9 @@ import {
 } from './siteConfig';
 
 onReady(() => {
+  ensureVisitorSession();
   hydrateStaticCopy();
+  initAmbientMusic();
   ensureExclusivePlayback();
 
   const memoryModal = initMemoryModal();
@@ -51,6 +56,7 @@ onReady(() => {
   initEffects();
   restoreMoodTheme();
   initMood();
+  initPersonalVideo();
   initFinal();
   initEasterEggs();
 

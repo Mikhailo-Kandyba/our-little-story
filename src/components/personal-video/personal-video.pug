@@ -1,0 +1,12 @@
+mixin personal-video
+  section.section.personal-video#personal-video(data-personal-video, hidden, aria-labelledby="personal-video-title")
+    p.section__eyebrow(data-reveal, data-personal-video-eyebrow)
+    h2#personal-video-title.section__title(data-reveal, data-personal-video-heading)
+    .personal-video__frame(data-reveal)
+      video.personal-video__player(
+        data-personal-video-player,
+        controls,
+        playsinline,
+        webkit-playsinline,
+        preload="metadata"
+      )
