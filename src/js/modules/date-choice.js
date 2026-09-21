@@ -58,7 +58,7 @@ export function initDateChoice() {
               aria-pressed="false"
             >
               <div class="date-choice__media">
-                <img src="${escapeAttr(item.image)}" alt="" loading="lazy" data-fallback>
+                <img class="date-choice__image" src="${escapeAttr(item.image)}" alt="" loading="lazy" data-fallback>
                 <span class="date-choice__check" aria-hidden="true">♥</span>
               </div>
               <div class="date-choice__body">
