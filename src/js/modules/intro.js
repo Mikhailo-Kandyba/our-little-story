@@ -45,7 +45,7 @@ export function initIntro({ onOpen }) {
   if (privacy) {
     privacy.textContent =
       introContent.privacyNote ||
-      'Для роботи сторінки зберігається технічна інформація про відвідування.';
+      '💗';
   }
   openBtn.textContent = introContent.button;
 

@@ -8,12 +8,18 @@ export const ALLOWED_TYPES = [
   'mood',
   'booking',
   'reaction',
-  'game_completed'
+  'game_completed',
+  'quiz_answer',
+  'date_choice'
 ];
 
 const MAX_TEXT = 500;
+const MAX_QUIZ_QUESTION = 600;
+const MAX_QUIZ_ANSWER = 2000;
+const MAX_DATE_DETAILS = 2000;
 const MAX_ID = 64;
 const MAX_NAME = 40;
+const MAX_DATE_PICKS = 2;
 
 function clip(value, max) {
   if (value == null) {
@@ -120,6 +126,70 @@ export function validatePayload(body) {
           completedChapters: Number.isFinite(chapters)
             ? Math.max(0, Math.min(5, Math.round(chapters)))
             : 5,
+          timestamp: clip(body.timestamp, 64)
+        },
+        visitor
+      )
+    };
+  }
+
+  if (type === 'quiz_answer') {
+    const answerRaw = Array.isArray(body.answer)
+      ? body.answer.map((item) => clip(item, 200)).filter(Boolean).join('\n')
+      : clip(body.answer, MAX_QUIZ_ANSWER);
+    const qNum = Number(body.questionNumber);
+    return {
+      ok: true,
+      data: Object.assign(
+        {
+          type,
+          questionId: clip(body.questionId, MAX_ID),
+          questionNumber: Number.isFinite(qNum)
+            ? Math.max(0, Math.min(99, Math.round(qNum)))
+            : 0,
+          question: clip(body.question, MAX_QUIZ_QUESTION),
+          answer: answerRaw || '(без тексту)',
+          answerType: clip(body.answerType, 32),
+          timestamp: clip(body.timestamp, 64)
+        },
+        visitor
+      )
+    };
+  }
+
+  if (type === 'date_choice') {
+    const rawList = Array.isArray(body.selectedDates) ? body.selectedDates : [];
+    const selectedDates = rawList
+      .slice(0, MAX_DATE_PICKS)
+      .map((item) => {
+        if (!item || typeof item !== 'object') {
+          return null;
+        }
+        const id = clip(item.id, MAX_ID);
+        const title = clip(item.title, 120);
+        if (!id || !title) {
+          return null;
+        }
+        return {
+          id: id,
+          title: title,
+          emoji: clip(item.emoji, 16)
+        };
+      })
+      .filter(Boolean);
+
+    if (!selectedDates.length) {
+      return { ok: false, error: 'invalid_date_choice' };
+    }
+
+    return {
+      ok: true,
+      data: Object.assign(
+        {
+          type,
+          selectedDates: selectedDates,
+          details: clip(body.details, MAX_DATE_DETAILS),
+          visitorLabel: clip(body.visitorLabel, MAX_NAME),
           timestamp: clip(body.timestamp, 64)
         },
         visitor
@@ -235,6 +305,56 @@ export function formatTelegramText(body) {
         '💭 Момент, який вона хотіла б пережити ще раз:',
         '"' + (body.answer || '…') + '"'
       ])
+      .join('\n');
+  }
+
+  if (body.type === 'quiz_answer') {
+    const isAlbum = body.questionId === 'shared-album';
+    const heading = isAlbum ? '❤️ Відповідь про спільний альбом' : '❤️ Нова відповідь';
+    let questionLabel = 'Питання:';
+    if (isAlbum) {
+      questionLabel = 'Спільний альбом';
+    } else if (body.questionNumber) {
+      questionLabel = 'Питання ' + body.questionNumber + ':';
+    }
+    return [heading, '']
+      .concat(visitorLines(body))
+      .concat([
+        questionLabel,
+        body.question || '…',
+        '',
+        'Відповідь:',
+        body.answer || '…',
+        '',
+        'Час: ' + formatLocalTime(body.timestamp)
+      ])
+      .join('\n');
+  }
+
+  if (body.type === 'date_choice') {
+    const name = body.visitorName || body.visitorLabel || 'Вона';
+    const picks = (body.selectedDates || [])
+      .map((item) => {
+        const mark = item.emoji ? item.emoji + ' ' : '';
+        return mark + (item.title || item.id || '');
+      })
+      .filter(Boolean);
+    const details = body.details && String(body.details).trim();
+    const detailBlock = details
+      ? [
+        '💭 Що зробило б побачення ідеальним:',
+        '',
+        '«' + details + '»'
+      ]
+      : ['💭 Додаткових побажань не залишила.'];
+
+    return ['❤️ ВИБІР ПОБАЧЕННЯ', '']
+      .concat(visitorLines(body))
+      .concat([name + ' обрала:', ''])
+      .concat(picks)
+      .concat([''])
+      .concat(detailBlock)
+      .concat(['', '🕐 ' + formatLocalTime(body.timestamp)])
       .join('\n');
   }
 

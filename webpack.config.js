@@ -173,6 +173,11 @@ module.exports = env => {
           to: 'img/memories',
         },
         {
+          from: path.join(__dirname, 'src', 'img/date-choice'),
+          to: 'img/date-choice',
+          ignore: ['README.txt'],
+        },
+        {
           from: path.join(__dirname, 'src', 'audio'),
           to: 'audio',
         },

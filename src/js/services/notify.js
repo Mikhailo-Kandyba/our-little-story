@@ -8,6 +8,9 @@
 import { NOTIFY_ENDPOINT } from '../siteConfig';
 import { getVisitorId, getVisitorName } from '../modules/visitor';
 
+const QUIZ_FAIL_KEY = 'nastyaQuizPending';
+const DATE_FAIL_KEY = 'nastyaDateChoicePending';
+
 /**
  * @param {object} data
  * @returns {Promise<{ ok: boolean, simulated?: boolean }>}
@@ -45,6 +48,109 @@ export function sendNotification(data) {
       }
       return simulate(payload);
     });
+}
+
+/**
+ * Send one quiz answer via the shared notify pipeline.
+ * Failures are stored locally for a later retry and never throw to the UI.
+ *
+ * @param {{
+ *   questionId: string,
+ *   question: string,
+ *   answer: string | string[],
+ *   questionNumber?: number,
+ *   answerType?: string
+ * }} params
+ * @returns {Promise<{ ok: boolean, simulated?: boolean, pending?: boolean }>}
+ */
+export function sendQuizAnswer(params) {
+  const answer = Array.isArray(params.answer)
+    ? params.answer.map((item) => String(item).trim()).filter(Boolean)
+    : String(params.answer == null ? '' : params.answer).trim();
+
+  const payload = {
+    type: 'quiz_answer',
+    questionId: params.questionId,
+    questionNumber: params.questionNumber || 0,
+    question: params.question,
+    answer: answer,
+    answerType: params.answerType || 'text'
+  };
+
+  return sendNotification(payload)
+    .then((result) => result)
+    .catch((err) => {
+      storeQuizPending(payload);
+      if (typeof console !== 'undefined' && console.error) {
+        console.error(
+          '[quiz] notify failed',
+          err && err.status ? 'status=' + err.status : err
+        );
+      }
+      return { ok: false, pending: true };
+    });
+}
+
+/**
+ * Send date-choice selection via the shared notify pipeline.
+ * Failures are stored locally and never throw to the UI.
+ *
+ * @param {{
+ *   selectedDates: Array<{ id: string, title: string, emoji?: string }>,
+ *   details?: string,
+ *   visitorLabel?: string
+ * }} params
+ * @returns {Promise<{ ok: boolean, simulated?: boolean, pending?: boolean }>}
+ */
+export function sendDateChoice(params) {
+  const selectedDates = (params.selectedDates || [])
+    .map((item) => ({
+      id: String(item.id || '').trim(),
+      title: String(item.title || '').trim(),
+      emoji: String(item.emoji || '').trim()
+    }))
+    .filter((item) => item.id && item.title);
+
+  const payload = {
+    type: 'date_choice',
+    selectedDates: selectedDates,
+    details: String(params.details == null ? '' : params.details).trim(),
+    visitorLabel: params.visitorLabel || ''
+  };
+
+  return sendNotification(payload)
+    .then((result) => result)
+    .catch((err) => {
+      storeDateChoicePending(payload);
+      if (typeof console !== 'undefined' && console.error) {
+        console.error(
+          '[date-choice] notify failed',
+          err && err.status ? 'status=' + err.status : err
+        );
+      }
+      return { ok: false, pending: true };
+    });
+}
+
+function storeQuizPending(payload) {
+  try {
+    const prev = JSON.parse(window.sessionStorage.getItem(QUIZ_FAIL_KEY) || '[]');
+    const withoutDup = prev.filter(
+      (item) => !(item && item.questionId === payload.questionId)
+    );
+    withoutDup.push(payload);
+    window.sessionStorage.setItem(QUIZ_FAIL_KEY, JSON.stringify(withoutDup));
+  } catch (e) {
+    // ignore storage errors
+  }
+}
+
+function storeDateChoicePending(payload) {
+  try {
+    window.sessionStorage.setItem(DATE_FAIL_KEY, JSON.stringify(payload));
+  } catch (e) {
+    // ignore storage errors
+  }
 }
 
 function simulate(payload) {

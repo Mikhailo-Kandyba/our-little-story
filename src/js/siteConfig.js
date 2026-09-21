@@ -3,6 +3,7 @@
  *  SITE CONFIG — увесь персональний контент тут
  * ============================================================
  * Фото: src/img/memories/memory-01.jpg …
+ * Побачення: src/img/date-choice/{id}.png (див. dateChoices)
  * Відео: MP4 (H.264 + AAC) на Cloudflare R2 (див. R2_MEDIA_BASE_URL).
  *   { type: 'video', src: R2_MEDIA_BASE_URL + '/clip.mp4', poster: 'img/memories/poster.jpeg', title: '...', text: '...' }
  *   poster необовʼязковий. Поле image теж підходить замість src.
@@ -39,7 +40,7 @@ export const intro = {
   nameLabel: 'Як тебе звати? 🤍',
   namePlaceholder: 'Твоє імʼя',
   nameError: 'Напиши, будь ласка, як тебе звати',
-  privacyNote: 'Для роботи сторінки зберігається технічна інформація про відвідування.',
+  privacyNote: '💗',
   button: 'Відкрити нашу історію'
 };
 
@@ -360,34 +361,189 @@ export const videoMoments = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(func
 
 export const reactions = ['❤️', '🥹', '😂', '✨'];
 
+/**
+ * Quiz question types:
+ * - choice — one option (optional `correct` index)
+ * - multi — several options + «Готово» (optional `correct` index list)
+ * - text — single-line free answer
+ * - textarea — multi-line free answer
+ */
 export const questions = [
   {
-    question: 'Де було наше перше побачення?',
-    answers: ['Той маленький заклад у центрі', 'Біля річки', 'У галасливій кавʼярні'],
+    id: 'first-date',
+    type: 'choice',
+    question: 'Чи памʼятаєш ти, де було наше перше побачення? ❤️',
+    answers: [
+      'У кінотеатрі — ми ходили на “Звірополіс 2” 🍿',
+      'У кавʼярні біля метро',
+      'На прогулянці в парку',
+      'У ресторані в центрі міста'
+    ],
     correct: 0,
-    successText: 'Так. Я теж памʼятаю.'
+    successText: 'Так… саме там. Я теж це памʼятаю ❤️',
+    softText: 'Майже — але я памʼятаю трохи інакше 🤍'
   },
   {
-    question: 'Що ми завжди замовляли?',
-    answers: ['Щось солодке', 'Щось, що ніколи не доїдали', 'Те, що радили'],
+    id: 'vacation',
+    type: 'text',
+    question: 'Який наш відпочинок тобі найбільше запамʼятався?',
+    placeholder: 'Напиши момент, який першим спав на думку…'
+  },
+  {
+    id: 'first-i-love-you',
+    type: 'text',
+    question:
+      'Чи пригадуєш ти, коли ти мені вперше сказала: “Я тебе кохаю”? ❤️',
+    placeholder: 'Напиши, що згадується…',
+    afterText:
+      'А я памʼятаю. Це було в тебе вдома. Ми лежали на ліжку, обіймалися, і тоді ти вперше сказала мені ці слова ❤️'
+  },
+  {
+    id: 'anniversary',
+    type: 'choice',
+    question: 'Чи пригадуєш ти, коли у нас річниця стосунків? ❤️',
+    answers: ['14 лютого', '17 лютого', '20 лютого', '1 березня'],
     correct: 1,
-    successText: 'Досі смішно згадувати.'
+    successText: 'Так. Саме 17 лютого ❤️',
+    softText: 'Близько… але я памʼятаю іншу дату 🤍'
   },
   {
-    question: 'Що завжди грало на фоні?',
-    answers: ['Тиша', 'Той самий плейлист', 'Міський шум'],
+    id: 'birthday',
+    type: 'choice',
+    question: 'Чи памʼятаєш ти, коли в мене день народження? 🎂',
+    answers: ['12 вересня', '2 жовтня', '15 жовтня', '28 листопада'],
     correct: 1,
-    successText: 'Іноді досі чую.'
+    successText: 'Саме так — 2 жовтня 🎂',
+    softText: 'Майже… але день інший 🤍'
   },
   {
-    question: 'Що робило звичайні дні іншими?',
-    answers: ['Погода', 'Час', 'Ти'],
-    correct: 2,
-    successText: 'Деякі відповіді прості.'
+    id: 'wishes',
+    type: 'multi',
+    question: 'Чи памʼятаєш ти, які бажання ти мені загадувала? ✨',
+    answers: [
+      'Новий iPhone',
+      'Маврикій',
+      'Подорож до Японії',
+      'Доломітові Альпи',
+      'Мадейра',
+      'Новий ноутбук',
+      'Мальтіпу',
+      'Круїз Середземним морем'
+    ],
+    correct: [0, 1, 3, 4, 6],
+    successText: 'Ти памʼятаєш ✨',
+    softText: 'Дещо збіглося — і це вже тепло 🤍',
+    doneLabel: 'Готово'
+  },
+  {
+    id: 'second-date',
+    type: 'textarea',
+    question:
+      'Чи памʼятаєш ти наше друге побачення, коли я приїхав до тебе додому? ❤️\n\nРозкажи, що ти тоді відчувала. І якщо памʼятаєш той вечір — що ми тоді робили?',
+    placeholder: 'Напиши все, що згадується…'
+  },
+  {
+    id: 'slow-dance',
+    type: 'choice',
+    question:
+      'Хотіла б ти ще раз потанцювати зі мною повільний танець? І як думаєш — чи хотів би цього я? ❤️',
+    answers: [
+      'Так, і думаю, ти теж цього хочеш ❤️',
+      'Так, але не впевнена щодо тебе 🙈',
+      'Не знаю… треба перевірити 😏',
+      'Ні, танці — це не наше 😄'
+    ],
+    afterByAnswer: {
+      0: 'Тоді залишилось тільки обрати пісню… ❤️'
+    }
+  },
+  {
+    id: 'warm-moments',
+    type: 'textarea',
+    question: 'Які теплі моменти з наших стосунків ти досі памʼятаєш? ❤️',
+    lead:
+      'Можливо, якесь наше побачення, поїздка, вечір удвох, момент, коли ми просто лежали поруч і обіймалися, якісь мої слова чи вчинок… А може, зовсім маленька річ, про яку я навіть не здогадуюсь.\n\nРозкажи про моменти, які залишилися у твоїй памʼяті.',
+    placeholder: 'Напиши те, що першим спало на думку…'
   }
 ];
 
-export const quizFinale = 'Дещо дивовижно важко забути.';
+/** Shown after all quiz questions (separate from progress count). */
+export const quizAlbum = {
+  id: 'shared-album',
+  title: 'А що, якщо зберігати нашу історію разом? ❤️',
+  text:
+    'Я б хотів, щоб у нас був наш спільний альбом — місце, де ми будемо зберігати фотографії наших моментів, поїздок, побачень і просто звичайних днів.\n\nХотіла б ти створити такий альбом разом зі мною?',
+  answers: ['Так, хочу ❤️', 'Звісно, а ти сумнівався? 😏'],
+  afterText:
+    'Тоді це буде ще одне місце для нашої історії. І, сподіваюся, фотографій там буде дуже-дуже багато ❤️'
+};
+
+export const quizFinale = quizAlbum.afterText;
+
+/**
+ * Окремий блок вибору побачення (після quiz / shared-album).
+ * Фото: src/img/date-choice/{id}.png — заміни placeholder на свої знімки
+ * (можна .jpg/.jpeg і оновити шлях у dateChoices[].image).
+ */
+export const dateChoiceSection = {
+  eyebrow: 'Наступна зустріч',
+  heading: 'Якби ти могла обрати наше наступне побачення… ❤️',
+  lead: 'Не думай занадто довго. Просто обери те, куди тобі зараз захотілося б піти зі мною.',
+  hint: 'Можеш обрати один або два варіанти.',
+  limitMessage: 'Обери максимум два ❤️',
+  detailsTitle: 'А що зробило б таке побачення для тебе ідеальним?',
+  detailsLead:
+    'Квіти? Конкретне місце? Музика? Якась маленька деталь? Напиши те, що спало на думку.',
+  detailsPlaceholder: 'Напиши мені…',
+  submit: 'Ось так я хочу ❤️',
+  thanks: 'Добре. Я запамʼятав ❤️',
+  thanksNote: 'Можливо, одного дня тобі просто залишиться красиво одягнутися й чекати 😉'
+};
+
+export const dateChoices = [
+  {
+    id: 'romantic-dinner',
+    emoji: '🌹',
+    title: 'Романтична вечеря',
+    description: 'Одягнутися красиво й просто провести вечір удвох.',
+    image: 'img/date-choice/romantic-dinner.png'
+  },
+  {
+    id: 'theatre-date',
+    emoji: '🎭',
+    title: 'Театр + вечеря',
+    description: 'Спочатку вистава, а після — вечеря або прогулянка нічним містом.',
+    image: 'img/date-choice/theatre-date.png'
+  },
+  {
+    id: 'cabin-date',
+    emoji: '🏡',
+    title: 'Будиночок за містом',
+    description: 'Тиша, природа, затишний будинок і вечір тільки для нас.',
+    image: 'img/date-choice/cabin-date.png'
+  },
+  {
+    id: 'surprise-date',
+    emoji: '✨',
+    title: 'Вечір-сюрприз',
+    description: 'Ти знаєш тільки день. Куди ми їдемо і що будемо робити — організовую я.',
+    image: 'img/date-choice/surprise-date.png'
+  },
+  {
+    id: 'cinema-date',
+    emoji: '🍿',
+    title: 'Кіно як тоді',
+    description: 'Трошки повернутися туди, звідки все починалося.',
+    image: 'img/date-choice/cinema-date.png'
+  },
+  {
+    id: 'mini-trip',
+    emoji: '✈️',
+    title: 'Міні-подорож',
+    description: 'Втекти кудись удвох хоча б на один-два дні.',
+    image: 'img/date-choice/mini-trip.png'
+  }
+];
 
 export const moods = [
   { id: 'sad', emoji: '😔', label: 'Не дуже' },
@@ -474,7 +630,7 @@ export const message = {
 
 export const finalSection = {
   heading: 'Хочеш поговорити?',
-  subheading: 'Без тиску. Просто варіант.',
+  subheading: ' ',
   choices: {
     meet: 'Побачитися',
     call: 'Зідзвонитися',
@@ -522,7 +678,7 @@ export const availableCallDates = {
 export const betweenSections = [
   'Деяким моментам не потрібен підпис.',
   'Усе ще тут.',
-  'Мʼяко.'
+  ' '
 ];
 
 export const confirmationCopy = {
@@ -568,7 +724,9 @@ export const ui = {
   next: 'Наступне',
   questionOf: 'Питання',
   of: 'з',
-  quizSoft: 'Майже — я памʼятаю трохи інакше.',
+  quizSoft: 'Майже — я памʼятаю трохи інакше 🤍',
+  quizNext: 'Далі',
+  quizDone: 'Готово',
   timelineEyebrow: 'Хронологія',
   timelineTitle: 'Наша історія',
   timelineLead: 'Моменти в тому порядку, як вони досі приходять.',

@@ -6,6 +6,7 @@ import { initCarousel, initVideoCarousel } from './modules/carousel';
 import { initPolaroid } from './modules/polaroid';
 import { initRandomMemory } from './modules/random-memory';
 import { initQuiz } from './modules/quiz';
+import { initDateChoice } from './modules/date-choice';
 import { initStoryGame } from './modules/story-game';
 import { initMood } from './modules/mood';
 import { initMemoryModal } from './modules/memory-modal';
@@ -52,6 +53,7 @@ onReady(() => {
   initPolaroid();
   initRandomMemory();
   initQuiz();
+  initDateChoice();
   initStoryGame();
   initEffects();
   restoreMoodTheme();
