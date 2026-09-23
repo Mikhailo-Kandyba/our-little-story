@@ -70,6 +70,7 @@ onReady(() => {
 function hydrateStaticCopy() {
   setText('#story-title', story.heading);
   fillParagraphs('.story__copy', 'story__p', story.paragraphs);
+  setText('[data-story-note]', story.note);
 
   setText('#message-title', message.heading);
   fillParagraphs('.message__copy', 'message__p', message.paragraphs);
@@ -110,11 +111,20 @@ function hydrateStaticCopy() {
   setText('[data-mood-lead]', moodSection.subheading);
 
   setText('#closing-title', closing.title);
-  const closingText = document.querySelector('[data-closing-text]');
-  if (closingText) {
-    closingText.innerHTML = closing.text.replace(/\n/g, '<br>');
+  fillParagraphs('.closing__copy', 'closing__p', closing.paragraphs);
+
+  const closingParas = closing.paragraphs || [];
+  const finaleDelay = closingParas.length * 90 + 350;
+  const finale = document.querySelector('[data-closing-finale]');
+  if (finale) {
+    finale.textContent = closing.finale || '';
+    finale.setAttribute('data-reveal-delay', String(finaleDelay));
   }
-  setText('[data-closing-sign]', closing.signature);
+  const closingSign = document.querySelector('[data-closing-sign]');
+  if (closingSign) {
+    closingSign.textContent = closing.signature || '';
+    closingSign.setAttribute('data-reveal-delay', String(finaleDelay + 420));
+  }
 
   setText('[data-story-eyebrow]', ui.storyEyebrow);
   setText('[data-timeline-eyebrow]', ui.timelineEyebrow);

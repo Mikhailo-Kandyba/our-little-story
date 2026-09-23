@@ -1,5 +1,5 @@
 .mood {
-  margin-top: 28px;
+  margin-top: var(--space-6, 32px);
 }
 
 .mood__grid {
@@ -63,13 +63,13 @@
 }
 
 .mood__followup {
-  margin-top: 24px;
+  margin-top: var(--space-6, 32px);
   max-width: 480px;
   width: 100%;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 20px;
+  padding: var(--space-5, 24px);
   backdrop-filter: blur(12px);
 }
 

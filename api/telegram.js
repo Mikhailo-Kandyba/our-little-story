@@ -122,7 +122,8 @@ export function validatePayload(body) {
       data: Object.assign(
         {
           type,
-          answer: clip(body.answer, MAX_TEXT),
+          question: clip(body.question, MAX_QUIZ_QUESTION),
+          answer: clip(body.answer, MAX_TEXT) || '(без тексту)',
           completedChapters: Number.isFinite(chapters)
             ? Math.max(0, Math.min(5, Math.round(chapters)))
             : 5,
@@ -296,16 +297,15 @@ export function formatTelegramText(body) {
   }
 
   if (body.type === 'game_completed') {
-    const n = body.completedChapters != null ? body.completedChapters : 5;
-    return ['🎮 Гру пройдено', '']
-      .concat(visitorLines(body))
-      .concat([
-        '❤️ Зібрано фрагментів: ' + n + '/5',
-        '',
-        '💭 Момент, який вона хотіла б пережити ще раз:',
-        '"' + (body.answer || '…') + '"'
-      ])
-      .join('\n');
+    return [
+      '❤️ Нова відповідь від Насті',
+      '',
+      '🎮 Останнє запитання гри:',
+      body.question || '…',
+      '',
+      '💌 Її відповідь:',
+      body.answer || '…'
+    ].join('\n');
   }
 
   if (body.type === 'quiz_answer') {

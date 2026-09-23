@@ -4,7 +4,8 @@ mixin story-game-teaser
     h2#story-game-title.section__title(data-game-heading)
     p.section__lead(data-game-lead)
     .sg-teaser__actions
-      button.btn.btn_primary(type="button", data-game-open) Почати
+      p.sg-teaser__prompt(data-game-prompt)
+      button.btn.btn_primary.btn_cta.sg-teaser__start(type="button", data-game-open) Почати гру 🎮
 
 mixin story-game-overlay
   .story-game(data-story-game, hidden, aria-hidden="true", role="dialog", aria-modal="true", aria-label="Збери нашу історію")

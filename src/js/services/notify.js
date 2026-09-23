@@ -10,6 +10,7 @@ import { getVisitorId, getVisitorName } from '../modules/visitor';
 
 const QUIZ_FAIL_KEY = 'nastyaQuizPending';
 const DATE_FAIL_KEY = 'nastyaDateChoicePending';
+const GAME_FINALE_SENT_KEY = 'nastyaGameFinaleAnswerSent';
 
 /**
  * @param {object} data
@@ -130,6 +131,59 @@ export function sendDateChoice(params) {
       }
       return { ok: false, pending: true };
     });
+}
+
+/**
+ * Send the story-game finale answer via the shared notify pipeline.
+ * Deduped by sessionStorage. Failures never throw to the UI.
+ *
+ * @param {{ question: string, answer: string }} params
+ * @returns {Promise<{ ok: boolean, simulated?: boolean, pending?: boolean, skipped?: boolean }>}
+ */
+export function sendGameFinaleAnswer(params) {
+  const question = String(params.question == null ? '' : params.question).trim();
+  const answer = String(params.answer == null ? '' : params.answer).trim();
+  if (!answer) {
+    return Promise.resolve({ ok: false, skipped: true });
+  }
+
+  try {
+    if (window.sessionStorage.getItem(GAME_FINALE_SENT_KEY) === '1') {
+      return Promise.resolve({ ok: true, skipped: true });
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  const payload = {
+    type: 'game_completed',
+    question: question,
+    answer: answer,
+    completedChapters: 5
+  };
+
+  return sendNotification(payload)
+    .then((result) => {
+      markGameFinaleSent();
+      return result;
+    })
+    .catch((err) => {
+      if (typeof console !== 'undefined' && console.error) {
+        console.error(
+          '[game-finale] notify failed',
+          err && err.status ? 'status=' + err.status : err
+        );
+      }
+      return { ok: false, pending: true };
+    });
+}
+
+function markGameFinaleSent() {
+  try {
+    window.sessionStorage.setItem(GAME_FINALE_SENT_KEY, '1');
+  } catch (e) {
+    // ignore
+  }
 }
 
 function storeQuizPending(payload) {

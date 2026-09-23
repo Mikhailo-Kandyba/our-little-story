@@ -13,9 +13,9 @@
 }
 
 .personal-video__frame {
-  margin: 28px auto 0;
-  width: unquote('min(920px, 92vw)');
-  max-width: 100%;
+  margin: var(--space-6, 32px) auto 0;
+  width: 100%;
+  max-width: 920px;
   border-radius: 24px;
   overflow: hidden;
   background: var(--blush);
@@ -36,9 +36,8 @@
 
 @media (max-width: 768px) {
   .personal-video__frame {
-    width: 100%;
     border-radius: 18px;
-    margin-top: 22px;
+    margin-top: var(--space-5, 24px);
   }
 
   .personal-video__player {

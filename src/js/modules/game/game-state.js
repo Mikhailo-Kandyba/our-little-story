@@ -45,6 +45,11 @@ export function saveGameState(state) {
 export function resetGameState() {
   const state = createInitialState();
   saveGameState(state);
+  try {
+    window.sessionStorage.removeItem('nastyaGameFinaleAnswerSent');
+  } catch (err) {
+    // ignore
+  }
   return state;
 }
 

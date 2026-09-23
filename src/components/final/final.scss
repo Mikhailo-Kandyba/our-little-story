@@ -18,8 +18,8 @@
 .final__choices {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 40px;
+  gap: var(--space-4, 20px);
+  margin-top: var(--space-7, 40px);
 }
 
 .final__choice {
@@ -41,7 +41,12 @@
 }
 
 .final__choice:active {
-  transform: scale(0.98);
+  transform: scale(0.96);
+}
+
+.final__choice:focus-visible {
+  outline: 2px solid var(--accent-deep);
+  outline-offset: 3px;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -72,8 +77,8 @@
 
   .final__choices {
     grid-template-columns: 1fr;
-    gap: 12px;
-    margin-top: 28px;
+    gap: var(--space-3, 16px);
+    margin-top: var(--space-6, 32px);
   }
 
   .final__choice {

@@ -8,7 +8,7 @@
 .message__inner {
   max-width: 640px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0;
 }
 
 .message__title {
@@ -24,8 +24,9 @@
   color: var(--text-muted);
   line-height: 1.8;
   font-weight: 300;
-  margin: 0 0 20px;
+  margin: 0 0 var(--space-5, 24px);
   max-width: 520px;
+  overflow-wrap: break-word;
 }
 
 .message__p:last-child {

@@ -1,7 +1,7 @@
 .timeline {
   position: relative;
-  margin-top: 56px;
-  padding: 8px 0 24px;
+  margin-top: var(--space-8, 56px);
+  padding: var(--space-2, 12px) 0 var(--space-5, 24px);
 }
 
 .timeline::before {

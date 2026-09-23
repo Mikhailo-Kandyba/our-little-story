@@ -59,6 +59,18 @@
   color: var(--text);
   font-size: 24px;
   -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease),
+    transform 0.3s var(--ease);
+}
+
+.booking__close:active {
+  transform: scale(0.94);
+}
+
+.booking__close:hover,
+.booking__close:focus-visible {
+  border-color: var(--accent-deep);
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .booking__title {
@@ -101,13 +113,15 @@
   min-height: 48px;
   text-align: left;
   font-size: 16px;
-  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease),
+    transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
   -webkit-tap-highlight-color: transparent;
 }
 
 .booking__date:active,
 .booking__time:active {
   background: var(--accent-soft);
+  transform: scale(0.98);
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -117,6 +131,7 @@
   .booking__time:focus-visible {
     border-color: rgba(232, 160, 180, 0.65);
     background: var(--accent-soft);
+    box-shadow: 0 8px 22px rgba(180, 120, 140, 0.12);
   }
 }
 
@@ -133,6 +148,16 @@
   display: inline-flex;
   align-items: center;
   -webkit-tap-highlight-color: transparent;
+  transition: color 0.3s var(--ease), transform 0.3s var(--ease);
+}
+
+.booking__back:active {
+  transform: scale(0.97);
+}
+
+.booking__back:hover,
+.booking__back:focus-visible {
+  color: var(--accent-deep);
 }
 
 .booking__confirm-line {

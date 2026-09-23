@@ -5,6 +5,32 @@ import { prefersReducedMotion } from './utils';
 const DEDUPE_MS = 3000;
 const MAX_SELECT = 2;
 const DONE_KEY = 'nastyaDateChoiceDone';
+const FORM_LEAVE_MS = 450;
+const HEART_ANIM_MS = 3400;
+
+const HEART_SVG = `
+  <svg class="date-choice-heart-fx__heart" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="date-heart-grad" x1="12%" y1="8%" x2="88%" y2="92%">
+        <stop offset="0%" stop-color="#ffb6c8"/>
+        <stop offset="45%" stop-color="#e8a0b4"/>
+        <stop offset="100%" stop-color="#d4849c"/>
+      </linearGradient>
+      <filter id="date-heart-glow" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="1.4" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <path
+      fill="url(#date-heart-grad)"
+      filter="url(#date-heart-glow)"
+      d="M32 56.5C20.8 49.1 8 39.2 8 24.8 8 15.4 15.2 9 23.4 9c4.7 0 8.9 2.2 11.6 5.6C37.7 11.2 41.9 9 46.6 9 54.8 9 62 15.4 62 24.8c0 14.4-12.8 24.3-24 31.7-.8.5-1.7.8-2.5.8s-1.7-.3-2.5-.8z"
+    />
+  </svg>
+`;
 
 /**
  * Date-choice section — always visible after quiz in the page flow.
@@ -215,15 +241,29 @@ export function initDateChoice() {
       } catch (e) {
         // ignore
       }
-      showThanks();
+      showThanks(true);
     });
   }
 
-  function showThanks() {
+  function showThanks(animate) {
+    if (!animate || prefersReducedMotion()) {
+      revealThanks();
+      busy = false;
+      return;
+    }
+
+    playHeartCelebration().then(() => {
+      revealThanks();
+      busy = false;
+    });
+  }
+
+  function revealThanks() {
     const form = root.querySelector('[data-date-form]');
     const thanks = root.querySelector('[data-date-thanks]');
     if (form) {
       form.classList.add('is-hidden');
+      form.classList.remove('is-leaving');
     }
     if (thanks) {
       thanks.hidden = false;
@@ -233,7 +273,48 @@ export function initDateChoice() {
     } else {
       root.innerHTML = thanksMarkup(true);
     }
-    busy = false;
+  }
+
+  function playHeartCelebration() {
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = () => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        if (fx.parentNode) {
+          fx.parentNode.removeChild(fx);
+        }
+        resolve();
+      };
+
+      const form = root.querySelector('[data-date-form]');
+      if (form) {
+        form.classList.add('is-leaving');
+      }
+
+      const fx = document.createElement('div');
+      fx.className = 'date-choice-heart-fx';
+      fx.setAttribute('aria-hidden', 'true');
+      fx.innerHTML = HEART_SVG;
+
+      window.setTimeout(() => {
+        if (form) {
+          form.classList.add('is-hidden');
+        }
+        document.body.appendChild(fx);
+        requestAnimationFrame(() => {
+          fx.classList.add('is-play');
+        });
+
+        const heart = fx.querySelector('.date-choice-heart-fx__heart');
+        if (heart) {
+          heart.addEventListener('animationend', finish, { once: true });
+        }
+        window.setTimeout(finish, HEART_ANIM_MS + 200);
+      }, FORM_LEAVE_MS);
+    });
   }
 }
 

@@ -1,5 +1,5 @@
 .carousel {
-  margin-top: 36px;
+  margin-top: var(--space-7, 40px);
   user-select: none;
   -webkit-user-select: none;
 }
@@ -92,8 +92,8 @@
 
 .carousel__meta {
   text-align: center;
-  margin-top: 28px;
-  padding: 0 4px;
+  margin-top: var(--space-6, 32px);
+  padding: 0;
 }
 
 .carousel__progress {

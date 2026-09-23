@@ -1,7 +1,7 @@
 .polaroid {
   position: relative;
   height: unquote('clamp(340px, 70vw, 420px)');
-  margin-top: 40px;
+  margin-top: var(--space-7, 40px);
   display: flex;
   align-items: center;
   justify-content: center;

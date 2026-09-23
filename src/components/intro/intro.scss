@@ -172,8 +172,7 @@
 
 .intro__open {
   min-width: 188px;
-  min-height: 48px;
-  animation: introRise 1.1s var(--ease) 0.24s both;
+  min-height: 54px;
 }
 
 .intro__open:disabled,
@@ -182,6 +181,11 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  animation: introRise 1.1s var(--ease) 0.24s both;
+}
+
+.intro__open:not(:disabled):not([aria-disabled="true"]) {
+  animation: introRise 1.1s var(--ease) 0.24s both, btn-cta-pulse 2.4s var(--ease) 1.2s infinite;
 }
 
 .intro__privacy {

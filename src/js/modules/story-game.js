@@ -82,6 +82,7 @@ function hydrateTeaser(teaser) {
   const eyebrow = teaser.querySelector('[data-game-eyebrow]');
   const title = teaser.querySelector('[data-game-heading]');
   const lead = teaser.querySelector('[data-game-lead]');
+  const prompt = teaser.querySelector('[data-game-prompt]');
   const btn = teaser.querySelector('[data-game-open]');
   if (eyebrow) {
     eyebrow.textContent = gameSection.eyebrow;
@@ -91,6 +92,9 @@ function hydrateTeaser(teaser) {
   }
   if (lead) {
     lead.textContent = gameSection.lead;
+  }
+  if (prompt) {
+    prompt.textContent = gameSection.startPrompt || '';
   }
   if (btn) {
     btn.textContent = gameSection.startButton;

@@ -27,8 +27,9 @@ body {
   margin: 0;
   line-height: 1.6;
   transition: background-color 1.2s ease, color 0.8s ease;
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+  //padding-left: env(safe-area-inset-left);
+  //padding-right: env(safe-area-inset-right);
+  padding: 0 15px;
 }
 
 body.is-locked {

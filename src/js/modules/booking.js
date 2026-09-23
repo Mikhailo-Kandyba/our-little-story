@@ -201,7 +201,7 @@ export function initFinal() {
     panel.innerHTML = `
       <div class="booking__text-flow">
         <p class="booking__success-title">${finalSection.textFlow.title}</p>
-        <a class="btn btn_primary" href="${CONTACT_URL}" data-contact-link>${finalSection.textFlow.button}</a>
+        <a class="btn btn_primary" href="${CONTACT_URL}" target="_blank" rel="noopener noreferrer" data-contact-link>${finalSection.textFlow.button}</a>
       </div>
     `;
   }

@@ -1,6 +1,7 @@
 import { clearNode, el, spawnParticles, wait } from '../game-dom';
 import { playHeartSound, playSuccessSound, playUiSound } from '../game-audio';
-import { sendNotification } from '../../../services/notify';
+import { sendGameFinaleAnswer } from '../../../services/notify';
+import { loadGameState } from '../game-state';
 import { prefersReducedMotion } from '../../utils';
 
 /**
@@ -11,6 +12,7 @@ export function mountFinale(root, ctx) {
   let destroyed = false;
   let custom = false;
   let submitted = false;
+  let sending = false;
 
   clearNode(root);
   const wrap = el('div', 'sg-chapter sg-finale');
@@ -37,12 +39,19 @@ export function mountFinale(root, ctx) {
   form.hidden = true;
   form.appendChild(el('p', 'sg-finale__question', { text: c.question }));
 
+  if (c.notifyNote) {
+    form.appendChild(el('p', 'sg-finale__notify-note', { text: c.notifyNote }));
+  }
+
   const options = el('div', 'sg-choices');
   let selected = '';
 
   (c.options || []).forEach(function (label) {
     const btn = el('button', 'sg-choice', { type: 'button', text: label });
     btn.addEventListener('click', function () {
+      if (submitted) {
+        return;
+      }
       playUiSound();
       custom = false;
       selected = label;
@@ -60,6 +69,9 @@ export function mountFinale(root, ctx) {
     text: c.customOption
   });
   customBtn.addEventListener('click', function () {
+    if (submitted) {
+      return;
+    }
     playUiSound();
     custom = true;
     selected = '';
@@ -114,36 +126,61 @@ export function mountFinale(root, ctx) {
   wrap.appendChild(thanks);
   root.appendChild(wrap);
 
-  // Opening sequence
-  spawnParticles(heartWrap, 14);
-  heart.classList.add('is-enter');
-  playHeartSound();
+  const existing = loadGameState();
+  const alreadyAnswered = Boolean(existing.finalAnswer && String(existing.finalAnswer).trim());
 
-  const step = prefersReducedMotion() ? 200 : 900;
-  wait(step).then(function () {
-    if (destroyed) {
-      return;
-    }
+  if (alreadyAnswered) {
+    submitted = true;
+    showThanksImmediate();
+  } else {
+    runOpeningSequence();
+  }
+
+  function runOpeningSequence() {
+    spawnParticles(heartWrap, 14);
+    heart.classList.add('is-enter');
+    playHeartSound();
+
+    const step = prefersReducedMotion() ? 200 : 900;
+    wait(step)
+      .then(function () {
+        if (destroyed) {
+          return;
+        }
+        line1.hidden = false;
+        line1.classList.add('is-show');
+        return wait(step + 200);
+      })
+      .then(function () {
+        if (destroyed) {
+          return;
+        }
+        line2.hidden = false;
+        line2.classList.add('is-show');
+        return wait(step);
+      })
+      .then(function () {
+        if (destroyed) {
+          return;
+        }
+        form.hidden = false;
+        form.classList.add('is-show');
+      });
+  }
+
+  function showThanksImmediate() {
     line1.hidden = false;
     line1.classList.add('is-show');
-    return wait(step + 200);
-  }).then(function () {
-    if (destroyed) {
-      return;
-    }
     line2.hidden = false;
     line2.classList.add('is-show');
-    return wait(step);
-  }).then(function () {
-    if (destroyed) {
-      return;
-    }
-    form.hidden = false;
-    form.classList.add('is-show');
-  });
+    heart.classList.add('is-enter');
+    form.hidden = true;
+    thanks.hidden = false;
+    thanks.classList.add('is-show');
+  }
 
   function onSave() {
-    if (submitted) {
+    if (submitted || sending) {
       return;
     }
     let answer = selected;
@@ -159,16 +196,22 @@ export function mountFinale(root, ctx) {
     }
 
     submitted = true;
+    sending = true;
     saveBtn.disabled = true;
     playSuccessSound();
 
-    sendNotification({
-      type: 'game_completed',
-      answer: answer,
-      completedChapters: 5
-    }).catch(function () {
-      // soft-fail — UX continues
-    });
+    // Soft-fail: Telegram errors must not block the finale UX.
+    sendGameFinaleAnswer({
+      question: c.question,
+      answer: answer
+    }).then(
+      function () {
+        sending = false;
+      },
+      function () {
+        sending = false;
+      }
+    );
 
     form.hidden = true;
     thanks.hidden = false;

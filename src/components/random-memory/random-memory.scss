@@ -3,8 +3,9 @@
 }
 
 .random__btn {
-  margin-top: 8px;
+  margin-top: var(--space-5, 24px);
   position: relative;
+  min-height: 52px;
 }
 
 .random__btn.is-shuffle {
@@ -22,7 +23,7 @@
 }
 
 .random__stage {
-  margin-top: 40px;
+  margin-top: var(--space-7, 40px);
   min-height: unquote('clamp(220px, 50vw, 280px)');
   display: flex;
   justify-content: center;
