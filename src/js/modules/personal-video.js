@@ -1,4 +1,5 @@
 import { getPersonalVideoUrl, personalVideo as copy } from '../siteConfig';
+import { sendFinalVideoPlay } from '../services/notify';
 
 export function initPersonalVideo() {
   const section = document.querySelector('[data-personal-video]');
@@ -34,6 +35,10 @@ export function initPersonalVideo() {
   player.setAttribute('webkit-playsinline', '');
   player.preload = 'metadata';
   player.controls = true;
+
+  player.addEventListener('play', function onFinalVideoPlay() {
+    sendFinalVideoPlay().catch(function () {});
+  });
 
   section.hidden = false;
   section.setAttribute('aria-hidden', 'false');

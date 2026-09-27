@@ -9,6 +9,8 @@ export const ALLOWED_TYPES = [
   'booking',
   'reaction',
   'game_completed',
+  'game_started',
+  'final_video_play',
   'quiz_answer',
   'date_choice'
 ];
@@ -198,6 +200,19 @@ export function validatePayload(body) {
     };
   }
 
+  if (type === 'game_started' || type === 'final_video_play') {
+    return {
+      ok: true,
+      data: Object.assign(
+        {
+          type: type,
+          timestamp: clip(body.timestamp, 64)
+        },
+        visitor
+      )
+    };
+  }
+
   return {
     ok: true,
     data: Object.assign(
@@ -356,6 +371,14 @@ export function formatTelegramText(body) {
       .concat(detailBlock)
       .concat(['', '🕐 ' + formatLocalTime(body.timestamp)])
       .join('\n');
+  }
+
+  if (body.type === 'game_started') {
+    return '🎮 Настя натиснула «Почати гру»';
+  }
+
+  if (body.type === 'final_video_play') {
+    return '🎬 Настя запустила фінальне відео';
   }
 
   return '';

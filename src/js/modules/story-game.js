@@ -20,6 +20,7 @@ import { mountPuzzle } from './game/chapters/puzzle';
 import { mountMaze } from './game/chapters/maze';
 import { mountHiddenHeart } from './game/chapters/hidden-heart';
 import { mountFinale } from './game/chapters/finale';
+import { sendGameStarted } from '../services/notify';
 
 let state = createInitialState();
 let activeChapter = null;
@@ -41,6 +42,7 @@ export function initStoryGame() {
   const openBtns = teaser.querySelectorAll('[data-game-open]');
   openBtns.forEach(function (btn) {
     btn.addEventListener('click', function () {
+      sendGameStarted().catch(function () {});
       unlockGameAudio();
       playUiSound();
       openGame(overlay);

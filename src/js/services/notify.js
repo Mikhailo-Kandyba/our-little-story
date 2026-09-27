@@ -11,6 +11,8 @@ import { getVisitorId, getVisitorName } from '../modules/visitor';
 const QUIZ_FAIL_KEY = 'nastyaQuizPending';
 const DATE_FAIL_KEY = 'nastyaDateChoicePending';
 const GAME_FINALE_SENT_KEY = 'nastyaGameFinaleAnswerSent';
+const GAME_STARTED_SENT_KEY = 'nastyaGameStartedSent';
+const FINAL_VIDEO_PLAY_SENT_KEY = 'nastyaFinalVideoPlaySent';
 
 /**
  * @param {object} data
@@ -178,9 +180,62 @@ export function sendGameFinaleAnswer(params) {
     });
 }
 
-function markGameFinaleSent() {
+/**
+ * Once-per-session notify when she taps «Почати гру».
+ * Never throws — safe to fire-and-forget from the game open handler.
+ *
+ * @returns {Promise<{ ok: boolean, simulated?: boolean, pending?: boolean, skipped?: boolean }>}
+ */
+export function sendGameStarted() {
+  return sendOncePerSession(GAME_STARTED_SENT_KEY, { type: 'game_started' }, 'game-started');
+}
+
+/**
+ * Once-per-session notify when the personal/final video actually starts playing.
+ * Never throws — safe to fire-and-forget from the video `play` handler.
+ *
+ * @returns {Promise<{ ok: boolean, simulated?: boolean, pending?: boolean, skipped?: boolean }>}
+ */
+export function sendFinalVideoPlay() {
+  return sendOncePerSession(
+    FINAL_VIDEO_PLAY_SENT_KEY,
+    { type: 'final_video_play' },
+    'final-video-play'
+  );
+}
+
+function sendOncePerSession(storageKey, payload, logLabel) {
   try {
-    window.sessionStorage.setItem(GAME_FINALE_SENT_KEY, '1');
+    if (window.sessionStorage.getItem(storageKey) === '1') {
+      return Promise.resolve({ ok: true, skipped: true });
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  // Mark immediately so rapid re-clicks / replay do not spam Telegram.
+  markSessionFlag(storageKey);
+
+  return sendNotification(payload)
+    .then((result) => result)
+    .catch((err) => {
+      if (typeof console !== 'undefined' && console.error) {
+        console.error(
+          '[' + logLabel + '] notify failed',
+          err && err.status ? 'status=' + err.status : err
+        );
+      }
+      return { ok: false, pending: true };
+    });
+}
+
+function markGameFinaleSent() {
+  markSessionFlag(GAME_FINALE_SENT_KEY);
+}
+
+function markSessionFlag(key) {
+  try {
+    window.sessionStorage.setItem(key, '1');
   } catch (e) {
     // ignore
   }
