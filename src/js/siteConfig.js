@@ -348,8 +348,13 @@ export const memories = [
   }
 ];
 
-/** Нові відео з R2 (video-1…video-13). Підписи додаси пізніше. */
-export const videoMoments = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(function (n) {
+/**
+ * Відео каруселі «Наші моменти» з R2.
+ * Порядок: video-19 першим, далі video-1…13, потім video-14…18.
+ */
+export const videoMoments = [
+  19, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
+].map(function (n) {
   return {
     id: 'v' + n,
     type: 'video',
