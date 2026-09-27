@@ -1,34 +1,42 @@
 .personal-video {
   text-align: center;
+  max-width: none;
+  width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+  overflow-x: hidden;
 }
 
 .personal-video[hidden] {
   display: none;
 }
 
+.personal-video .section__eyebrow,
 .personal-video .section__title {
   max-width: 720px;
   margin-left: auto;
   margin-right: auto;
+  padding-left: var(--section-pad-x);
+  padding-right: var(--section-pad-x);
+  box-sizing: border-box;
 }
 
 .personal-video__frame {
-  margin: var(--space-6, 32px) auto 0;
+  margin: var(--space-6, 32px) 0 0;
   width: 100%;
-  max-width: 920px;
-  border-radius: 24px;
+  max-width: none;
+  border-radius: 0;
   overflow: hidden;
   background: var(--blush);
-  border: 1px solid var(--border);
-  box-shadow: 0 24px 60px rgba(180, 120, 140, 0.22);
+  border: 0;
+  box-shadow: 0 24px 60px rgba(180, 120, 140, 0.18);
 }
 
 .personal-video__player {
   display: block;
   width: 100%;
-  max-width: 100%;
+  max-width: none;
   height: auto;
-  max-height: unquote('min(78vh, 820px)');
   object-fit: contain;
   background: var(--blush);
   -webkit-tap-highlight-color: transparent;
@@ -36,17 +44,6 @@
 
 @media (max-width: 768px) {
   .personal-video__frame {
-    border-radius: 18px;
     margin-top: var(--space-5, 24px);
-  }
-
-  .personal-video__player {
-    max-height: unquote('min(70vh, 640px)');
-  }
-}
-
-@media (max-width: 374px) {
-  .personal-video__frame {
-    border-radius: 16px;
   }
 }

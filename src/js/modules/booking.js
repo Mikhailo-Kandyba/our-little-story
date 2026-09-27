@@ -1,6 +1,7 @@
 import {
   availableDates,
   availableCallDates,
+  isBookingDateInRange,
   finalSection,
   CONTACT_URL,
   confirmationCopy,
@@ -86,6 +87,21 @@ export function initFinal() {
     return mode === 'call' ? availableCallDates : availableDates;
   }
 
+  function isSelectableDate(iso) {
+    return (
+      isBookingDateInRange(iso) &&
+      Object.prototype.hasOwnProperty.call(datesMap(), iso)
+    );
+  }
+
+  function isSelectableTime(iso, time) {
+    if (!isSelectableDate(iso) || !time) {
+      return false;
+    }
+    const times = datesMap()[iso] || [];
+    return times.indexOf(time) !== -1;
+  }
+
   function renderStep() {
     if (!panel) {
       return;
@@ -93,12 +109,21 @@ export function initFinal() {
     const intro =
       mode === 'call' ? finalSection.callIntro : finalSection.meetIntro;
 
+    if (selectedDate && !isSelectableDate(selectedDate)) {
+      selectedDate = null;
+      selectedTime = null;
+    }
+    if (selectedDate && selectedTime && !isSelectableTime(selectedDate, selectedTime)) {
+      selectedTime = null;
+    }
+
     if (!selectedDate) {
       panel.innerHTML = `
         <p class="booking__intro">${intro}</p>
         <h3 class="booking__step-title">${finalSection.pickDate}</h3>
         <div class="booking__dates" role="list">
           ${Object.keys(datesMap())
+    .filter(isSelectableDate)
     .map(
       (iso) => `
               <button type="button" class="booking__date" data-date="${iso}" role="listitem">
@@ -111,7 +136,11 @@ export function initFinal() {
       `;
       panel.querySelectorAll('[data-date]').forEach((btn) => {
         btn.addEventListener('click', () => {
-          selectedDate = btn.getAttribute('data-date');
+          const iso = btn.getAttribute('data-date');
+          if (!isSelectableDate(iso)) {
+            return;
+          }
+          selectedDate = iso;
           selectedTime = null;
           renderStep();
         });
@@ -141,7 +170,11 @@ export function initFinal() {
       });
       panel.querySelectorAll('[data-time]').forEach((btn) => {
         btn.addEventListener('click', () => {
-          selectedTime = btn.getAttribute('data-time');
+          const time = btn.getAttribute('data-time');
+          if (!isSelectableTime(selectedDate, time)) {
+            return;
+          }
+          selectedTime = time;
           renderStep();
         });
       });
@@ -160,6 +193,12 @@ export function initFinal() {
       renderStep();
     });
     panel.querySelector('[data-confirm]').addEventListener('click', () => {
+      if (!isSelectableTime(selectedDate, selectedTime)) {
+        selectedDate = null;
+        selectedTime = null;
+        renderStep();
+        return;
+      }
       const btn = panel.querySelector('[data-confirm]');
       btn.disabled = true;
       btn.textContent = ui.sending;

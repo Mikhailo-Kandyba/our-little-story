@@ -1,13 +1,12 @@
 import { ambientAudio, BACKGROUND_VOLUME } from '../siteConfig';
 import { prefersReducedMotion } from './utils';
 
-const playingVideos = [];
-
 let ambientEl = null;
 let musicUnlocked = false;
 let musicWanted = false;
-let musicHeldForVideo = false;
 let bound = false;
+/** Invalidates in-flight ambient.play() callbacks after a newer sync. */
+let syncGeneration = 0;
 
 export function initAmbientMusic() {
   ambientEl = document.querySelector('[data-ambient-audio]');
@@ -58,7 +57,7 @@ export function startAmbientFromUserGesture() {
 /** Explicit user mute / stop (future UI). */
 export function stopAmbientByUser() {
   musicWanted = false;
-  musicHeldForVideo = false;
+  syncGeneration += 1;
   const audio = getAmbient();
   if (audio) {
     audio.pause();
@@ -73,6 +72,41 @@ export function isAmbientUnlocked() {
   return musicUnlocked;
 }
 
+/**
+ * Pause ambient while any video is actually playing; resume when none are.
+ * Safe to call after play / pause / ended / carousel slide changes.
+ */
+export function syncBackgroundMusicWithVideos() {
+  const audio = getAmbient();
+  if (!audio) {
+    return;
+  }
+
+  if (hasPlayingVideo()) {
+    syncGeneration += 1;
+    if (!audio.paused) {
+      audio.pause();
+    }
+    return;
+  }
+
+  if (!musicUnlocked || !musicWanted || !audio.paused) {
+    return;
+  }
+
+  const generation = (syncGeneration += 1);
+  audio.volume = BACKGROUND_VOLUME;
+  const play = audio.play();
+  if (play && typeof play.then === 'function') {
+    play.catch((error) => {
+      if (generation !== syncGeneration) {
+        return;
+      }
+      console.warn('Background music resume failed:', error);
+    });
+  }
+}
+
 function bindVideoMusicBridge() {
   if (bound) {
     return;
@@ -82,11 +116,10 @@ function bindVideoMusicBridge() {
   document.addEventListener(
     'play',
     (event) => {
-      const video = event.target;
-      if (!video || video.tagName !== 'VIDEO') {
+      if (!isVideoEventTarget(event)) {
         return;
       }
-      onVideoPlay(video);
+      syncBackgroundMusicWithVideos();
     },
     true
   );
@@ -94,11 +127,10 @@ function bindVideoMusicBridge() {
   document.addEventListener(
     'pause',
     (event) => {
-      const video = event.target;
-      if (!video || video.tagName !== 'VIDEO') {
+      if (!isVideoEventTarget(event)) {
         return;
       }
-      onVideoStop(video);
+      syncBackgroundMusicWithVideos();
     },
     true
   );
@@ -106,84 +138,31 @@ function bindVideoMusicBridge() {
   document.addEventListener(
     'ended',
     (event) => {
-      const video = event.target;
-      if (!video || video.tagName !== 'VIDEO') {
+      if (!isVideoEventTarget(event)) {
         return;
       }
-      onVideoStop(video);
+      syncBackgroundMusicWithVideos();
     },
     true
   );
 }
 
-function onVideoPlay(video) {
-  if (playingVideos.indexOf(video) === -1) {
-    if (playingVideos.length === 0) {
-      holdAmbientForVideo();
+function hasPlayingVideo() {
+  const videos = document.querySelectorAll('video');
+  for (let i = 0; i < videos.length; i++) {
+    const video = videos[i];
+    // Prefer real element state over a mirrored boolean (can desync on slide changes).
+    // readyState > 0 skips MEDIA_NONE shells that never loaded; still true once playback starts.
+    if (!video.paused && !video.ended && video.readyState > 0) {
+      return true;
     }
-    playingVideos.push(video);
   }
+  return false;
 }
 
-function onVideoStop(video) {
-  const idx = playingVideos.indexOf(video);
-  if (idx === -1) {
-    return;
-  }
-  playingVideos.splice(idx, 1);
-  if (playingVideos.length === 0) {
-    releaseAmbientAfterVideo();
-  }
-}
-
-function holdAmbientForVideo() {
-  const audio = getAmbient();
-  if (!audio) {
-    return;
-  }
-  if (!audio.paused) {
-    musicHeldForVideo = true;
-    audio.pause();
-    return;
-  }
-  // Already paused: keep hold flag if music was wanted/unlocked so we can resume later.
-  if (musicUnlocked && musicWanted) {
-    musicHeldForVideo = true;
-  }
-}
-
-function releaseAmbientAfterVideo() {
-  if (!musicHeldForVideo) {
-    return;
-  }
-  if (!musicUnlocked || !musicWanted) {
-    musicHeldForVideo = false;
-    return;
-  }
-  if (playingVideos.length > 0) {
-    return;
-  }
-
-  const audio = getAmbient();
-  if (!audio) {
-    musicHeldForVideo = false;
-    return;
-  }
-
-  audio.volume = BACKGROUND_VOLUME;
-  const play = audio.play();
-  if (play && typeof play.then === 'function') {
-    play
-      .then(() => {
-        musicHeldForVideo = false;
-      })
-      .catch(() => {
-        // Autoplay blocked — keep flag so a later gesture can retry if needed.
-        musicHeldForVideo = true;
-      });
-    return;
-  }
-  musicHeldForVideo = audio.paused;
+function isVideoEventTarget(event) {
+  const el = event && event.target;
+  return !!(el && el.tagName === 'VIDEO');
 }
 
 function getAmbient() {

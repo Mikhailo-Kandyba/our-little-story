@@ -47,12 +47,12 @@ export const intro = {
 
 /**
  * Одне розмовне відео перед фіналом.
- * file — імʼя файлу в R2 (наприклад 'personal-message.mp4') або повний URL.
+ * file — імʼя файлу в R2 (наприклад 'main-video.mp4') або повний URL.
  * Порожній file = section не показується.
  */
 export const personalVideo = {
-  file: '',
-  eyebrow: 'Особисто',
+  file: 'main-video.mp4',
+  eyebrow: ' ',
   heading: 'І ще дещо, що я хочу сказати тобі особисто 🤍'
 };
 
@@ -447,12 +447,12 @@ export const questions = [
     id: 'slow-dance',
     type: 'choice',
     question:
-      'Хотіла б ти ще раз потанцювати зі мною повільний танець? І як думаєш чи хотів би цього я? ❤️',
+      'Хотіла б ти потанцювати зі мною повільний танець? І як думаєш чи хотів би цього я? ❤️',
     answers: [
       'Так, і думаю, ти теж цього хочеш ❤️',
       'Так, але не впевнена щодо тебе 🙈',
       'Не знаю… треба перевірити 😏',
-      'Ні, танці — це не наше 😄'
+      'Ні, танці це не наше 😄'
     ],
     afterByAnswer: {
       0: 'Тоді залишилось тільки обрати пісню… ❤️'
@@ -671,20 +671,56 @@ export const closing = {
   signature: 'Твій Міша ❤️'
 };
 
-export const availableDates = {
-  '2026-09-21': ['18:00', '19:00', '20:00'],
-  '2026-09-22': ['18:30', '20:00'],
-  '2026-09-24': ['19:00', '20:30'],
-  '2026-09-26': ['17:00', '18:00', '19:30'],
-  '2026-09-28': ['16:00', '18:00']
-};
+/** Inclusive booking window for both «Побачитися» and «Зідзвонитися». */
+export const AVAILABLE_FROM = '2026-09-27';
+export const AVAILABLE_TO = '2026-10-20';
 
-export const availableCallDates = {
-  '2026-09-21': ['12:00', '15:00', '21:00'],
-  '2026-09-23': ['13:00', '19:00'],
-  '2026-09-25': ['11:00', '18:30', '20:00'],
-  '2026-09-27': ['14:00', '21:00']
-};
+const DEFAULT_MEET_TIMES = ['18:00', '19:00', '20:00'];
+const DEFAULT_CALL_TIMES = ['12:00', '15:00', '18:30', '21:00'];
+
+/** @returns {Record<string, string[]>} */
+function buildAvailableDateMap(times) {
+  const map = {};
+  const slots = times.slice();
+  eachIsoDateInclusive(AVAILABLE_FROM, AVAILABLE_TO, (iso) => {
+    map[iso] = slots.slice();
+  });
+  return map;
+}
+
+function eachIsoDateInclusive(fromIso, toIso, fn) {
+  const cursor = new Date(fromIso + 'T12:00:00');
+  const end = new Date(toIso + 'T12:00:00');
+  if (isNaN(cursor.getTime()) || isNaN(end.getTime()) || cursor > end) {
+    return;
+  }
+  while (cursor <= end) {
+    fn(toIsoDate(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+}
+
+function toIsoDate(date) {
+  const y = date.getFullYear();
+  const m = date.getMonth() + 1;
+  const d = date.getDate();
+  return y + '-' + (m < 10 ? '0' : '') + m + '-' + (d < 10 ? '0' : '') + d;
+}
+
+export function isBookingDateInRange(iso) {
+  return (
+    typeof iso === 'string' &&
+    /^\d{4}-\d{2}-\d{2}$/.test(iso) &&
+    iso >= AVAILABLE_FROM &&
+    iso <= AVAILABLE_TO
+  );
+}
+
+/** Meet («Побачитися») — every calendar day in AVAILABLE_FROM…AVAILABLE_TO. */
+export const availableDates = buildAvailableDateMap(DEFAULT_MEET_TIMES);
+
+/** Call («Зідзвонитися») — same date range as meet. */
+export const availableCallDates = buildAvailableDateMap(DEFAULT_CALL_TIMES);
 
 export const betweenSections = [
   ' ',
@@ -847,7 +883,7 @@ export const gameContent = {
       music: {
         icon: '🎵',
         label: 'Музика',
-        text: 'Тут може звучати наша пісня 🎵',
+        text: 'Тут може звучати наша пісня, але ми її не обрали 🎵',
         audio: '' // наприклад: 'audio/game-memory.mp3'
       }
     }

@@ -7,6 +7,11 @@ const MAX_SELECT = 2;
 const DONE_KEY = 'nastyaDateChoiceDone';
 const FORM_LEAVE_MS = 450;
 const HEART_ANIM_MS = 3400;
+const THANKS_ANIM_MS = 550;
+const FORM_COLLAPSE_MS = 500;
+
+/** Invalidates pending withStableScroll restores before intentional scroll. */
+let stableScrollGen = 0;
 
 const HEART_SVG = `
   <svg class="date-choice-heart-fx__heart" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
@@ -219,6 +224,10 @@ export function initDateChoice() {
     lastSubmitKey = submitKey;
     lastSubmitAt = now;
 
+    // Drop focus before the form collapses so the browser cannot
+    // scroll to the next focusable control further down the page.
+    blurIfInside(root);
+
     const submitBtn = root.querySelector('[data-date-submit]');
     if (submitBtn) {
       submitBtn.disabled = true;
@@ -246,33 +255,52 @@ export function initDateChoice() {
   }
 
   function showThanks(animate) {
+    const afterReveal = () =>
+      waitForLayoutReady().then(() => {
+        busy = false;
+        scrollToGameSection();
+      });
+
     if (!animate || prefersReducedMotion()) {
       revealThanks();
-      busy = false;
+      afterReveal();
       return;
     }
 
-    playHeartCelebration().then(() => {
-      revealThanks();
-      busy = false;
-    });
+    playHeartCelebration()
+      .then(() => {
+        revealThanks();
+        return afterReveal();
+      })
+      .catch(() => {
+        busy = false;
+      });
   }
 
   function revealThanks() {
+    withStableScroll(() => {
+      const form = root.querySelector('[data-date-form]');
+      const thanks = root.querySelector('[data-date-thanks]');
+      blurIfInside(root);
+      if (form) {
+        form.classList.add('is-hidden');
+        form.classList.remove('is-leaving');
+      }
+      if (thanks) {
+        thanks.hidden = false;
+        requestAnimationFrame(() => {
+          thanks.classList.add('is-show');
+        });
+      } else {
+        root.innerHTML = thanksMarkup(true);
+      }
+    });
+  }
+
+  function waitForLayoutReady() {
     const form = root.querySelector('[data-date-form]');
     const thanks = root.querySelector('[data-date-thanks]');
-    if (form) {
-      form.classList.add('is-hidden');
-      form.classList.remove('is-leaving');
-    }
-    if (thanks) {
-      thanks.hidden = false;
-      requestAnimationFrame(() => {
-        thanks.classList.add('is-show');
-      });
-    } else {
-      root.innerHTML = thanksMarkup(true);
-    }
+    return waitForFormCollapsed(form).then(() => waitForThanksShown(thanks));
   }
 
   function playHeartCelebration() {
@@ -291,6 +319,7 @@ export function initDateChoice() {
 
       const form = root.querySelector('[data-date-form]');
       if (form) {
+        blurIfInside(form);
         form.classList.add('is-leaving');
       }
 
@@ -300,9 +329,14 @@ export function initDateChoice() {
       fx.innerHTML = HEART_SVG;
 
       window.setTimeout(() => {
-        if (form) {
-          form.classList.add('is-hidden');
-        }
+        // Collapsing the tall form (max-height: 0) must not move the viewport —
+        // focus escape + layout shrink are what used to jump the page downward.
+        withStableScroll(() => {
+          blurIfInside(root);
+          if (form) {
+            form.classList.add('is-hidden');
+          }
+        });
         document.body.appendChild(fx);
         requestAnimationFrame(() => {
           fx.classList.add('is-play');
@@ -315,6 +349,142 @@ export function initDateChoice() {
         window.setTimeout(finish, HEART_ANIM_MS + 200);
       }, FORM_LEAVE_MS);
     });
+  }
+}
+
+/**
+ * Smooth-scroll to the story-game teaser after a successful date confirm.
+ * Only called from the submit success path — not on refresh / card click.
+ */
+function scrollToGameSection() {
+  const gameSection =
+    document.querySelector('#story-game') ||
+    document.querySelector('[data-story-game-teaser]');
+  if (!gameSection) {
+    return;
+  }
+
+  // Cancel any pending collapse scroll-restore so it cannot undo this scroll.
+  stableScrollGen += 1;
+
+  const behavior = prefersReducedMotion() ? 'auto' : 'smooth';
+  if (typeof gameSection.scrollIntoView === 'function') {
+    gameSection.scrollIntoView({
+      behavior: behavior,
+      block: 'start'
+    });
+  }
+}
+
+function waitForFormCollapsed(form) {
+  return new Promise((resolve) => {
+    if (!form || !form.classList.contains('is-hidden')) {
+      doubleRaf(resolve);
+      return;
+    }
+
+    const maxHeight = window.getComputedStyle(form).maxHeight;
+    if (maxHeight === '0px' || maxHeight === '0') {
+      doubleRaf(resolve);
+      return;
+    }
+
+    let settled = false;
+    const finish = () => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      form.removeEventListener('transitionend', onEnd);
+      resolve();
+    };
+    const onEnd = (event) => {
+      if (event.target !== form) {
+        return;
+      }
+      if (event.propertyName && event.propertyName !== 'max-height') {
+        return;
+      }
+      finish();
+    };
+    form.addEventListener('transitionend', onEnd);
+    window.setTimeout(finish, FORM_COLLAPSE_MS + 80);
+  });
+}
+
+function waitForThanksShown(thanks) {
+  return new Promise((resolve) => {
+    if (!thanks || prefersReducedMotion()) {
+      doubleRaf(resolve);
+      return;
+    }
+
+    if (!thanks.classList.contains('is-show')) {
+      // Class is applied on the next frame in revealThanks.
+      requestAnimationFrame(() => {
+        waitForThanksShown(thanks).then(resolve);
+      });
+      return;
+    }
+
+    let settled = false;
+    const finish = () => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      thanks.removeEventListener('animationend', onEnd);
+      resolve();
+    };
+    const onEnd = (event) => {
+      if (event.target !== thanks) {
+        return;
+      }
+      finish();
+    };
+    thanks.addEventListener('animationend', onEnd);
+    window.setTimeout(finish, THANKS_ANIM_MS + 80);
+  });
+}
+
+function doubleRaf(cb) {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(cb);
+  });
+}
+
+/** Prevent browser focus/scroll jumps when the date form collapses after submit. */
+function withStableScroll(fn) {
+  const gen = (stableScrollGen += 1);
+  const scrollX = window.scrollX || 0;
+  const scrollY = window.scrollY || window.pageYOffset || 0;
+  const restore = () => {
+    if (gen !== stableScrollGen) {
+      return;
+    }
+    if ((window.scrollY || window.pageYOffset || 0) === scrollY) {
+      return;
+    }
+    window.scrollTo({
+      top: scrollY,
+      left: scrollX,
+      behavior: 'instant'
+    });
+  };
+  fn();
+  window.scrollTo(scrollX, scrollY);
+  requestAnimationFrame(restore);
+}
+
+function blurIfInside(container) {
+  const active = document.activeElement;
+  if (
+    active &&
+    container &&
+    typeof active.blur === 'function' &&
+    container.contains(active)
+  ) {
+    active.blur();
   }
 }
 

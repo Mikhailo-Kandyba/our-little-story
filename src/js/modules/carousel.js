@@ -1,6 +1,7 @@
 import { memories, reactions, ui, easterEggs, videoMoments } from '../siteConfig';
 import { prefersReducedMotion } from './utils';
 import { sendNotification } from '../services/notify';
+import { syncBackgroundMusicWithVideos } from './ambient';
 import {
   armVideoPreload,
   ensureVideoSource,
@@ -176,6 +177,8 @@ function mountCarousel(options) {
         }
       }
     });
+    // After programmatic pause/unload on slide change — resume ambient if nothing is playing.
+    syncBackgroundMusicWithVideos();
   }
 
   function render() {

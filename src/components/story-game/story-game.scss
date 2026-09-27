@@ -7,6 +7,8 @@ body.sg-playing {
 
 .sg-teaser {
   text-align: center;
+  /* Keep the teaser heading clear of the viewport edge after scrollIntoView. */
+  scroll-margin-top: unquote('clamp(16px, 4vw, 32px)');
 }
 
 .sg-teaser .section__lead {

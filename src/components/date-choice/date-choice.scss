@@ -253,6 +253,7 @@
   opacity: 0;
   transform: scale(0.94);
   pointer-events: none;
+  overflow-anchor: none;
   transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
 }
 
@@ -262,6 +263,7 @@
   pointer-events: none;
   max-height: 0;
   overflow: hidden;
+  overflow-anchor: none;
   transition: opacity 0.4s var(--ease), transform 0.4s var(--ease),
     max-height 0.5s var(--ease);
 }
